@@ -16,6 +16,9 @@ export default {
         primary: "#8963ba",
         secondary: "#9f80c6",
       },
+      fontFamily: {
+        roboto: ['var(--font-roboto)'],
+      }
     },
   },
   plugins: [],
