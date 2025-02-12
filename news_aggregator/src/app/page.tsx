@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@heroui/react";
 import Main from '@/components/Main';
 import { UserIcon } from "@heroicons/react/24/solid";
+import NavBar from '@/components/navbar';
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
@@ -25,11 +26,8 @@ export default function HomePage() {
 
   return (
     <Main>
-      {/* Top Nav Bar */}
-      <nav>
-        {/* Add your nav bar content here */}
-      </nav>
-
+      <NavBar />
+      
       <div className="flex justify-between mx-4 h-2/3 bg-foreground_light dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
         <div className='flex flex-col justify-evenly items-start w-1/2 sm:ml-4 md:ml-6 ml-2'>
           <div className='w-full p-4'>

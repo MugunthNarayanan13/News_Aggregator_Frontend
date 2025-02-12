@@ -53,7 +53,7 @@ import {
   
   
 
-  export default function App() {
+  export default function NavBar() {
     return (
       <Navbar className="bg-background_light shadow-md px-6 py-3 flex justify-between items-center">
         
