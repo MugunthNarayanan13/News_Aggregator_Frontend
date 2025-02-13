@@ -6,7 +6,7 @@ interface MainProps {
 
 export default function Main({ children }: MainProps) {
     return (
-        <main className="w-screen h-screen flex-col">
+        <main className="w-full h-full flex-col">
             {children}
         </main>
     );
