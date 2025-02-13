@@ -1,9 +1,10 @@
-export interface NewsCardSmallProps {
+export interface NewsCardBigProps {
   title: string;
   desc: string;
   pubDate: string;
   pubName: string;
   pubLogo: string;
+  imgUrl: string;
   sentiment: string;
 }
 
@@ -11,17 +12,19 @@ const truncateText = (text: string, maxLength: number) => {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
-export default function NewsCardSmall({
+export default function NewsCardBig({
   title,
   desc,
   pubDate,
   pubName,
   pubLogo,
   sentiment,
-}: NewsCardSmallProps) {
+  imgUrl,
+}: NewsCardBigProps) {
   return (
     <div>
-      <div className="flex flex-col font-roboto sm:w-[300px] lg:w-[400px] sm:h-[150px] lg:h-[200px] border-2 border-black bg-background_light rounded-t-md mb-0">
+      <div className="flex flex-col font-roboto sm:w-[300px] lg:w-[400px] sm:h-[300px] lg:h-[460px] border-2 border-black bg-background_light rounded-t-md mb-0">
+      <div className="bg-black h-[270px] m-2 rounded-lg"></div>
         <div className="flex flex-row justify-between px-4 mt-1">
           <div className="font-light text-xl">{truncateText(title, 60)}</div>
           <div className="mt-2">

@@ -7,6 +7,7 @@ import { UserIcon } from "@heroicons/react/24/solid";
 import NavBar from "@/components/navbar";
 import NewsCardSmall from "@/components/NewsCardSmall";
 import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
+import NewsCardBig from "@/components/NewsCardBig";
 
 interface NewsSectionProps {
   sectionTitle: string;
@@ -15,13 +16,24 @@ interface NewsSectionProps {
 
 export function NewsSection({ sectionTitle, news }: NewsSectionProps) {
   return (
-    <div className="flex flex-col" id="newsSectionWrapper">
-      <div className="text-xl font-thin">{sectionTitle}</div>
-      <div className="flex flex-row" id="newsSection">
-        <div className="" id="bigCardWrapper"></div>
+    <div className="flex flex-col font-roboto" id="newsSectionWrapper">
+      <div className="text-xl font-light">{sectionTitle}</div>
+      <div className="flex flex-row gap-4" id="newsSection">
+        <div className="" id="bigCardWrapper">
+          <NewsCardBig
+            title="Hadf ads; a"
+            sentiment="positive"
+            pubDate="asdf/asdf/adsf"
+            pubLogo="adsfa "
+            pubName="Times Of India"
+            desc="sadfj; df ;alsj jksadjfhuhal lhiu ashdf jasdlfhiaewf ;j auwhfioauh fnjlsdjahfiuawef jdsnfiouhewouhfljasf"
+            imgUrl="sdfasdh asdfh asdf"
+          />
+        </div>
         <div className="flex flex-row gap-4 flex-wrap" id="smallCardWrapper">
-          {news.map((n) => (
+          {news.map((n, index) => (
             <NewsCardSmall
+              key={index}
               title={n.title}
               sentiment={n.sentiment}
               desc={n.desc}
@@ -54,7 +66,7 @@ export default function HomePage() {
       pubDate: "2025-02-12",
       pubName: "Finance Daily",
       pubLogo: "https://example.com/finance-daily-logo.png",
-      sentiment: "Negative",
+      sentiment: "Neutral",
     },
     {
       title: "Breakthrough in Renewable Energy",
