@@ -1,114 +1,77 @@
+import Image from "next/image";
+import Link from "next/link";
 import {
     Navbar,
     NavbarBrand,
     NavbarContent,
     NavbarItem,
-    Link,
   } from "@heroui/react";
-  import { Search, Mic } from "lucide-react";
-  
-  export const AppLogo = () => {
-    return (
-      <svg
-        width="36"
-        height="36"
-        viewBox="0 0 36 36"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* First Bar (Pink) */}
-        <rect x="6" y="8" width="4" height="20" rx="2" fill="url(#pinkGradient)" />
-  
-        {/* Second Bar (Orange) */}
-        <rect x="12" y="12" width="4" height="16" rx="2" fill="url(#orangeGradient)" />
-  
-        {/* Third Bar (Yellow) */}
-        <rect x="18" y="10" width="4" height="18" rx="2" fill="url(#yellowGradient)" />
-  
-        {/* Fourth Bar (Blue) */}
-        <rect x="24" y="14" width="4" height="14" rx="2" fill="url(#blueGradient)" />
-  
-        {/* Gradient Definitions */}
-        <defs>
-          <linearGradient id="pinkGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop stopColor="#FF007A" />
-            <stop offset="1" stopColor="#FF4B2B" />
-          </linearGradient>
-          <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop stopColor="#FF8000" />
-            <stop offset="1" stopColor="#FFA500" />
-          </linearGradient>
-          <linearGradient id="yellowGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop stopColor="#FFD700" />
-            <stop offset="1" stopColor="#FFAA00" />
-          </linearGradient>
-          <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop stopColor="#00AFFF" />
-            <stop offset="1" stopColor="#008CFF" />
-          </linearGradient>
-        </defs>
-      </svg>
-    );
-  };
+  import { Search, Mic, Settings, HelpCircle, UserCircle } from "lucide-react";
   
   
 
   export default function NavBar() {
     return (
-      <Navbar className="bg-background_light shadow-md px-6 py-3 flex justify-between items-center">
+      <>
+      <div className="bg-background  px-6 pb-3 flex justify-between items-center  mx-auto mt-2 rounded-3xl">
         
         {/* Left Side - Logo & Links */}
         <div className="flex items-center gap-6">
-          <NavbarBrand className="flex items-center gap-2">
-            <AppLogo />
-          </NavbarBrand>
+          <div className="flex items-center gap-2">
+            <span className="text-[30px] text-black mb-3">News </span>
+            <span className="text-[30px] font-bold text-black mb-3">Daily</span>
+          </div>
   
-          <NavbarContent className="hidden sm:flex text-foreground_dark gap-6">
-            <NavbarItem>
-              <Link color="foreground" href="#">
-                Home
-              </Link>
-            </NavbarItem>
-            <NavbarItem>
-              <Link color="foreground" href="#">
-                Login
-              </Link>
-            </NavbarItem>
-          </NavbarContent>
         </div>
 
+        <div className="flex-1 flex items-center gap-6 -ml-10">
+          {/* Search Bar */}
+          <div className="hidden sm:flex mx-auto items-center bg-white rounded-[20px] px-4 py-2 w-[20%] sm:w-[30rem] justify-end border border-2 border-foreground_light">
+            <Search size={18} className="text-black" />
+            <input
+              type="text"
+              placeholder="Search for topics,locations"
+              className="ml-2 w-full  bg-transparent  text-black placeholder-black"
+            />
+            <Mic size={18} className="text-black cursor-pointer" />
+          </div>
+        </div> 
         <div className="flex items-center gap-6 ml-auto">
-        
-        {/* Search Bar */}
-        <div className="hidden sm:flex items-center bg-foreground_light rounded-lg px-4 py-2 w-[20%] sm:w-[30rem] justify-end">
-          <Search size={18} className="text-gray-500" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="ml-2 w-full bg-transparent focus:outline-none text-gray-800"
-          />
-          <Mic size={18} className="text-gray-500 cursor-pointer" />
+          <button>
+            <HelpCircle size={22} className="text-black hover:text-black" />
+          </button>
+          <button>
+            <Settings size={22} className="text-black hover:text-black" />
+          </button>
+          <button>
+            <UserCircle size={22} className="text-black hover:text-black" />
+          </button>
+        </div>
+
+      </div>
+      <div className="bg-foreground_light py-3 rounded-3xl w-fit px-5 mx-auto mt-2">
+        <div className="container mx-auto flex justify-center gap-6 text-sm">
+          <Link href="#" className="text-black hover:text-black">
+            World
+          </Link>
+          <Link href="#" className="text-black hover:text-black">
+            Politics
+          </Link>
+          <Link href="#" className="text-black hover:text-black">
+            Technology
+          </Link>
+          <Link href="#" className="text-black hover:text-black">
+            Business
+          </Link>
+          <Link href="#" className="text-black hover:text-black">
+            Sports
+          </Link>
+          <Link href="#" className="text-black hover:text-black">
+            Entertainment
+          </Link>
         </div>
       </div>
-
-  {/* Login and Sign Up */}
-
-  {/* Right-aligned Login and Sign Up Section */}
-{/* <div className="ml-auto flex items-center gap-6 justify-end">
-  <NavbarContent justify="end">
-    <NavbarItem className="hidden lg:flex text-foreground_dark justify-end">
-      <Link href="#">Login</Link>
-    </NavbarItem>
-    <NavbarItem className="text-foreground_dark ml-auto">
-      <Button as={Link} color="primary" href="#" variant="flat">
-        Sign Up
-      </Button>
-    </NavbarItem>
-  </NavbarContent>
-</div> */}
-
-        
-      </Navbar>
+    </>
     );
   }
   

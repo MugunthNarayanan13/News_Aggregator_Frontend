@@ -43,8 +43,8 @@ interface NewsSectionProps {
     );
   
     return (
-      <div className="flex flex-col font-roboto pb-4" id="newsSectionWrapper">
-        <div className="text-2xl font-light">{sectionTitle}</div>
+      <div className="flex flex-col font-roboto bg-foreground_light rounded-[30px] p-4 pb-8" id="newsSectionWrapper">
+        <div className="text-2xl font-light ml-3 mb-2">{sectionTitle}</div>
   
         <div className="relative flex flex-row gap-6 items-center">
           <div className="" id="bigCardWrapper">
@@ -73,7 +73,7 @@ interface NewsSectionProps {
             ))}
           </div>
   
-          <div className="absolute flex flex-row z-50 right-0 top-0">
+          <div className="absolute flex flex-row z-50 right-0 -top-10">
             {/* Left Arrow */}
             <button
               onClick={() => setPageIndex((prev) => Math.max(prev - 1, 0))}
