@@ -12,8 +12,8 @@ import {
 } from "@heroicons/react/24/solid";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
-import { newsData } from "@/dataHandlers/newsData";
-import { fetchNews } from "@/dataHandlers/fetchModule";
+import { newsData } from "@/utils/newsData";
+import { fetchNews } from "@/utils/fetchModule";
 import { NewsCardBigProps } from "@/components/NewsCardBig";
 import { NewsCardSmallProps } from "@/components/NewsCardSmall";
 
