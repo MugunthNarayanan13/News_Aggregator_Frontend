@@ -16,6 +16,7 @@ import { newsData } from "@/utils/newsData";
 import { fetchNews } from "@/utils/fetchModule";
 import { NewsCardBigProps } from "@/components/NewsCardBig";
 import { NewsCardSmallProps } from "@/components/NewsCardSmall";
+import { languageWiseURL } from "@/utils/urls";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
@@ -23,9 +24,7 @@ export default function HomePage() {
   const [smallNews, setSmallNews] = useState<NewsCardSmallProps[]>([]);
 
   const fetch = async () => {
-    const newsData = await fetchNews(
-      `https://newsdata.io/api/1/latest?apikey=${process.env.NEXT_PUBLIC_API_KEY}&language=en`
-    );
+    const newsData = await fetchNews(languageWiseURL(["en", "hi"]));
 
     if (!newsData) {
       console.error("No news data available.");
