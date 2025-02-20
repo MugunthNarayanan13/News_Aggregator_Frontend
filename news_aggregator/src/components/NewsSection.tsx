@@ -66,6 +66,7 @@ export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
                 : bigNews.desc
             }
             imgUrl={bigNews == null ? "imageUrl" : bigNews.imgUrl}
+            pubDateTZ={bigNews == null ? "UTC" : bigNews.pubDateTZ}
           />
         </div>
         {/* News Cards */}
@@ -82,6 +83,7 @@ export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
               pubDate={n.pubDate}
               pubLogo={n.pubLogo}
               pubName={n.pubName}
+              pubDateTZ={n.pubDateTZ}
             />
           ))}
         </div>

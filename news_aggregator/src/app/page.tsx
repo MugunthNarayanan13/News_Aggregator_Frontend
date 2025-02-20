@@ -95,7 +95,7 @@ export default function HomePage() {
       {/* Bottom Div */}
       <div className="flex flex-col mx-4 mt-4 p-6 gap-6 dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
         <NewsSection sectionTitle="Latest News" news={smallNews} bigNews={bigNews} />
-        <NewsSection sectionTitle="Global News" news={newsData} bigNews={bigNews} />
+        <NewsSection sectionTitle="Global News" news={smallNews} bigNews={bigNews} />
       </div>
     </Main>
   );
