@@ -38,7 +38,7 @@ export default function HomePage() {
     <Main>
       <NavBar />
 
-      <div className="flex justify-between mx-4 h-2/3 bg-foreground_light dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
+      {/* <div className="flex justify-between mx-4 h-2/3 bg-foreground_light dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
         <div className="flex flex-col justify-evenly items-start w-1/2 sm:ml-4 md:ml-6 ml-2">
           <div className="w-full p-4">
             <h2 className="text-left font-bold">News Aggregator</h2>
@@ -71,10 +71,10 @@ export default function HomePage() {
             <h2 className="text-center">Users Registered</h2>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Bottom Div */}
-      <div className="flex flex-col mx-4 mt-4 p-6 bg-foreground_light dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
+      <div className="flex flex-col mx-4 mt-4 p-6 gap-6 dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
         <NewsSection sectionTitle="Latest News" news={newsData} />
         <NewsSection sectionTitle="Global News" news={newsData} />
       </div>

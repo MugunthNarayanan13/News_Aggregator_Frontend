@@ -22,12 +22,12 @@ export default function NewsCardSmall({
 }: NewsCardSmallProps) {
   return (
     <div>
-      <div className="flex flex-col font-roboto sm:w-[250px] md:w-[280px] lg:w-[320px] sm:h-[120px] md:h-[140px] lg:h-[160px] border-2 border-black bg-background_light rounded-t-md mb-0">
+      <div className="flex flex-col font-roboto sm:w-[250px] md:w-[280px] lg:w-[320px] sm:h-[120px] md:h-[140px] lg:h-[160px] border-none border-black bg-background_light rounded-[10px] mb-0">
         <div className="flex flex-row justify-between px-3 mt-1 gap-1">
-          <div className="font-light text-sm md:text-base lg:text-lg">
-            {truncateText(title, 50)}
-          </div>
-          <div className="mt-1">
+          {/* <div className="font-light text-sm md:text-base lg:text-lg">
+            {truncateText(title, 100)}
+          </div> */}
+          {/* <div className="mt-1">
             {sentiment.toLowerCase() === "positive" ? (
               <div className="bg-green-400 rounded-full h-3 w-3 md:h-4 md:w-4"></div>
             ) : sentiment.toLowerCase() === "negative" ? (
@@ -35,16 +35,23 @@ export default function NewsCardSmall({
             ) : (
               <div className="bg-blue-400 rounded-full h-3 w-3 md:h-4 md:w-4"></div>
             )}
-          </div>
+          </div> */}
         </div>
         <div className="px-3 py-1 mt-2 font-normal text-xs md:text-sm lg:text-base">
           {truncateText(desc, 120)}
         </div>
-      </div>
-      <div className="flex flex-row border-2 border-t-0 border-black bg-secondary rounded-b-md sm:h-[25px] md:h-[30px] lg:h-[35px]">
-        <div className="w-[25px] md:w-[30px] lg:w-[35px] scale-75 bg-black rounded-full"></div>
-        <div className="flex-1 text-center text-xs md:text-sm lg:text-base">
-          {pubName}
+        <div className="px-3 py-1 mt-1 mb-1 font-light text-xs md:text-sm lg:text-small">
+          <p>1 hour ago</p>
+        </div>
+        <div className="flex flex-row items-center border-none border-black bg-secondary rounded-b-[10px] sm:h-[25px] md:h-[50px] lg:h-[60px]">
+          <img
+            src={"https://i.bytvi.com/domain_icons/straitstimes.png"}
+            alt={pubName}
+            className="w-[15px] h-[20px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] rounded-full object-cover ml-3"
+          />
+          <div className="flex-1 text-white text-xs md:text-sm lg:text-base ml-3">
+            {pubName}
+          </div>
         </div>
       </div>
     </div>

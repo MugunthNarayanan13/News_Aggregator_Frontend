@@ -12,11 +12,11 @@ export default {
     extend: {
       colors: {
         background_light: "#eef5fc",
-        foreground_light: "#e9edf8",
+        foreground_light: "#c1cceb",
         background_dark: "#030a11",
         foreground_dark: "#080c18",
         primary: "#8963ba",
-        secondary: "#9f80c6",
+        secondary: "#5F5D98",
       },
       fontFamily: {
         roboto: ['var(--font-roboto)'],
