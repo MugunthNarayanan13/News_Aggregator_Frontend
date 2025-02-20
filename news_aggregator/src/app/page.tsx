@@ -24,7 +24,7 @@ export default function HomePage() {
 
   const fetch = async () => {
     const newsData = await fetchNews(
-      "https://newsdata.io/api/1/latest?apikey=<apiKey>&language=en"
+      `https://newsdata.io/api/1/latest?apikey=${process.env.NEXT_PUBLIC_API_KEY}&language=en`
     );
 
     if (!newsData) {
