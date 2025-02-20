@@ -32,13 +32,28 @@ interface NewsArticle {
 
 const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallProps[]] | null> => {
   try {
-    const response = await axios.get(url);
-    const newsData: NewsArticle[] = response.data.results;
+    let allNewsData: NewsArticle[] = [];
+    let nextPage: string | null = null;
+    let currentUrl = url;
 
-    if (newsData.length === 0) return null;
+    for (let i = 0; i < 3; i++) {
+      const response = await axios.get(currentUrl);
+      const newsData: NewsArticle[] = response.data.results;
 
-    const randomIndex = Math.floor(Math.random() * newsData.length);
-    const bigNewsItem = newsData[randomIndex];
+      if (!newsData || newsData.length === 0) break;
+
+      allNewsData = [...allNewsData, ...newsData];
+
+      nextPage = response.data.nextPage;
+      if (!nextPage) break;
+
+      currentUrl = `${url}&page=${nextPage}`;
+    }
+
+    if (allNewsData.length === 0) return null;
+
+    const randomIndex = Math.floor(Math.random() * allNewsData.length);
+    const bigNewsItem = allNewsData[randomIndex];
 
     const selectedBigNews: NewsCardBigProps = {
       title: bigNewsItem.title,
@@ -51,7 +66,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
       pubDateTZ: bigNewsItem.pubDateTZ,
     };
 
-    const remainingSmallNews: NewsCardSmallProps[] = newsData
+    const remainingSmallNews: NewsCardSmallProps[] = allNewsData
       .filter((_, index) => index !== randomIndex)
       .map((news) => ({
         title: news.title,
@@ -69,7 +84,5 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
     return null;
   }
 };
-
-
 
 export {fetchNews};

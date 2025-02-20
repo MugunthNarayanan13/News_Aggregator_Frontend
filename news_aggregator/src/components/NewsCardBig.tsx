@@ -40,15 +40,6 @@ export default function NewsCardBig({
           <div className="font-light text-sm md:text-base lg:text-lg">
             {truncateText(title, 65)}
           </div>
-          {/* <div className="mt-1">
-            {sentiment.toLowerCase() === "positive" ? (
-              <div className="bg-green-400 rounded-full h-3 w-3 md:h-4 md:w-4"></div>
-            ) : sentiment.toLowerCase() === "negative" ? (
-              <div className="bg-red-400 rounded-full h-3 w-3 md:h-4 md:w-4"></div>
-            ) : (
-              <div className="bg-blue-400 rounded-full h-3 w-3 md:h-4 md:w-4"></div>
-            )}
-          </div> */}
         </div>
         <div className="px-3 py-1 mt-2 font-normal text-xs md:text-sm">
           {truncateText(desc, 130)}
