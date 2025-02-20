@@ -11,15 +11,34 @@ import {
   ChevronLeftIcon,
 } from "@heroicons/react/24/solid";
 import NavBar from "@/components/navbar";
-import { NewsSection } from "@/components/NewsSection"; // Updated Import
-import { newsData } from "@/data/newsData"; // Import news data
-
+import { NewsSection } from "@/components/NewsSection";
+import { newsData } from "@/dataHandlers/newsData";
+import { fetchNews } from "@/dataHandlers/fetchModule";
+import { NewsCardBigProps } from "@/components/NewsCardBig";
+import { NewsCardSmallProps } from "@/components/NewsCardSmall";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
+  const [bigNews, setBigNews] = useState<NewsCardBigProps | null>(null);
+  const [smallNews, setSmallNews] = useState<NewsCardSmallProps[]>([]);
 
+  const fetch = async () => {
+    const newsData = await fetchNews(
+      "https://newsdata.io/api/1/latest?apikey=pub_701324d31104b2907bf1c3fa43124c7440418&language=en"
+    );
+
+    if (!newsData) {
+      console.error("No news data available.");
+      return;
+    }
+
+    const [bigNews, smallNews] = newsData;
+    setBigNews(bigNews);
+    setSmallNews(smallNews);
+  };
 
   useEffect(() => {
+    fetch();
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -75,8 +94,8 @@ export default function HomePage() {
 
       {/* Bottom Div */}
       <div className="flex flex-col mx-4 mt-4 p-6 gap-6 dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
-        <NewsSection sectionTitle="Latest News" news={newsData} />
-        <NewsSection sectionTitle="Global News" news={newsData} />
+        <NewsSection sectionTitle="Latest News" news={smallNews} bigNews={bigNews} />
+        <NewsSection sectionTitle="Global News" news={newsData} bigNews={bigNews} />
       </div>
     </Main>
   );
