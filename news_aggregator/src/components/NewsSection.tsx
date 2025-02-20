@@ -62,6 +62,7 @@ export function NewsSection({ sectionTitle, news }: NewsSectionProps) {
           />
         </div>
         {/* News Cards */}
+        {/* // */}
         <div
           className="flex flex-row gap-10 ml-4 flex-wrap"
           id="smallCardWrapper"
