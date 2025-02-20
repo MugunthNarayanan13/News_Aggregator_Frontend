@@ -4,14 +4,15 @@ import React, { useState, useEffect } from "react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/solid";
 import NewsCardSmall from "@/components/NewsCardSmall";
 import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
-import NewsCardBig from "@/components/NewsCardBig";
+import NewsCardBig, { NewsCardBigProps } from "@/components/NewsCardBig";
 
 interface NewsSectionProps {
   sectionTitle: string;
   news: NewsCardSmallProps[];
+  bigNews: NewsCardBigProps | null;
 }
 
-export function NewsSection({ sectionTitle, news }: NewsSectionProps) {
+export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
@@ -52,13 +53,20 @@ export function NewsSection({ sectionTitle, news }: NewsSectionProps) {
       <div className="relative flex flex-row gap-6 items-center">
         <div className="" id="bigCardWrapper">
           <NewsCardBig
-            title="Financial Markets Volatile"
-            sentiment="positive"
-            pubDate="asdf/asdf/adsf"
-            pubLogo="adsfa "
-            pubName="Times Of India"
-            desc="Scientists have discovered a new, highly efficient solar panel technology that could revolutionize the industry."
-            imgUrl="sdfasdh asdfh asdf"
+            title={bigNews == null ? "Title of News" : bigNews.title}
+            sentiment={bigNews == null ? "positive" : bigNews.sentiment}
+            pubDate={bigNews == null ? "2025-02-10" : bigNews.pubDate}
+            pubLogo={
+              bigNews == null ? "https://www.image.co.in" : bigNews.pubLogo
+            }
+            pubName={bigNews == null ? "Publisher Name" : bigNews.pubName}
+            desc={
+              bigNews == null
+                ? "Description of the news will be present here for display"
+                : bigNews.desc
+            }
+            imgUrl={bigNews == null ? "imageUrl" : bigNews.imgUrl}
+            pubDateTZ={bigNews == null ? "UTC" : bigNews.pubDateTZ}
           />
         </div>
         {/* News Cards */}
@@ -75,6 +83,7 @@ export function NewsSection({ sectionTitle, news }: NewsSectionProps) {
               pubDate={n.pubDate}
               pubLogo={n.pubLogo}
               pubName={n.pubName}
+              pubDateTZ={n.pubDateTZ}
             />
           ))}
         </div>
