@@ -1,4 +1,4 @@
-import { timeAgo } from "@/dataHandlers/dateFormatter";
+import { timeAgo } from "@/utils/dateFormatter";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 export interface NewsCardSmallProps {
