@@ -38,7 +38,7 @@ export default function NewsCardSmall({
 
         <div className="flex flex-row items-center border-none border-black bg-secondary rounded-b-[10px] sm:h-[20px] md:h-[25px] lg:h-[30px]">
           <img
-            src={"https://i.bytvi.com/domain_icons/straitstimes.png"}
+            src={pubLogo}
             alt={pubName}
             className="w-[15px] h-[20px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] rounded-full object-cover ml-3"
           />
