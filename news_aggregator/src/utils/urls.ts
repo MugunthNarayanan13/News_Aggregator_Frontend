@@ -1,22 +1,22 @@
 const apiKey = process.env.NEXT_PUBLIC_API_KEY
-const baseURL = `https://newsdata.io/api/1/latest?apikey=${apiKey}&removeduplicate=1`
-const sourceURL = `https://newsdata.io/api/1/sources?apikey=${apiKey}`
+export const baseURL = `https://newsdata.io/api/1/latest?apikey=${apiKey}&removeduplicate=1`
+export const sourceURL = `https://newsdata.io/api/1/sources?apikey=${apiKey}`
 
-const keyWordSearchURL = (keyword: string)=>{
-  return baseURL+`&q="${keyword}"`;
+const addKeyWordSearchURL = (url: string, keyword: string)=>{
+  return url+`&q="${keyword}"`;
 }
 
 // the country should be the country code (2 letter)
-const countryWiseURL = (countries: string[]) =>{
-  let url = baseURL+`&country=`;
+const addCountryWiseURL = (url: string, countries: string[]) =>{
+  url = url+`&country=`;
   countries.forEach((country)=>{
     url = url + `${country},`
   })
   return url.slice(0,url.length);
 }
 
-const categoryWiseURL = (categories: string[]) =>{
-  let url = baseURL+`&category=`;
+const addCategoryWiseURL = (url: string, categories: string[]) =>{
+  url = url+`&category=`;
   categories.forEach((category)=>{
     url = url + `${category},`
   })
@@ -24,19 +24,26 @@ const categoryWiseURL = (categories: string[]) =>{
 }
 
 // the language should be the language code
-const languageWiseURL = (langs: string[]) =>{
-  let url = baseURL+`&language=`;
+const addLanguageWiseURL = (url: string, langs: string[]) =>{
+  url = url+`&language=`;
   langs.forEach((lang)=>{
     url = url + `${lang},`;
   })
   return url.slice(0,url.length);
 }
 
-// the country should be the country code (2 letter)
-const publisherWiseURL = (countries: string[]) =>{
-  let url = baseURL+`&country=`;
-  countries.forEach((country)=>{
-    url = url + `${country},`;
+const addPublisherWiseURL = (url: string, domains: string[]) =>{
+  url = url+`&domain=`;
+  domains.forEach((domain)=>{
+    url = url + `${domain},`;
+  })
+  return url.slice(0,url.length);
+}
+
+const addRegionWiseURL = (url: string, regions: string[]) => {
+  url = url+"&regioin=";
+  regions.forEach((region)=>{
+    url = url+`${region},`;
   })
   return url.slice(0,url.length);
 }
@@ -63,10 +70,11 @@ const allPublishersURL = (countries: string[], langs=['en'], categories=[]) =>{
 }
 
 export {
-  keyWordSearchURL,
-  countryWiseURL,
-  categoryWiseURL,
-  languageWiseURL,
-  publisherWiseURL,
+  addKeyWordSearchURL,
+  addCountryWiseURL,
+  addCategoryWiseURL,
+  addLanguageWiseURL,
+  addPublisherWiseURL,
+  addRegionWiseURL,
   allPublishersURL
 }
