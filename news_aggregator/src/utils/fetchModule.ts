@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NewsCardBigProps } from "@/components/NewsCardBig";
 import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
 import axios from "axios";
@@ -32,15 +33,25 @@ interface NewsArticle {
 
 const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallProps[]] | null> => {
   try {
+    console.log("Fetching news from URL:", url); // ✅ Log the API request URL
+
     let allNewsData: NewsArticle[] = [];
     let nextPage: string | null = null;
     let currentUrl = url;
 
     for (let i = 0; i < 3; i++) {
+      console.log("API Request Attempt:", i + 1, "URL:", currentUrl); // ✅ Log each API request attempt
+
       const response = await axios.get(currentUrl);
+      
+      console.log("API Response Data:", response.data); // ✅ Log the full API response
+
       const newsData: NewsArticle[] = response.data.results;
 
-      if (!newsData || newsData.length === 0) break;
+      if (!newsData || newsData.length === 0) {
+        console.log("No news data received.");
+        break;
+      }
 
       allNewsData = [...allNewsData, ...newsData];
 
@@ -50,7 +61,10 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
       currentUrl = `${url}&page=${nextPage}`;
     }
 
-    if (allNewsData.length === 0) return null;
+    if (allNewsData.length === 0) {
+      console.log("No valid news data available.");
+      return null;
+    }
 
     const randomIndex = Math.floor(Math.random() * allNewsData.length);
     const bigNewsItem = allNewsData[randomIndex];
@@ -79,10 +93,11 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
       }));
 
     return [selectedBigNews, remainingSmallNews];
-  } catch (error) {
-    console.error("Error fetching news:", error);
+  } catch (error: any) {
+    console.error("Error fetching news:", error.response?.status, error.response?.data);
     return null;
   }
 };
 
-export {fetchNews};
+export { fetchNews };
+

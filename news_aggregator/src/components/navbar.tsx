@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import Image from "next/image";
 import Link from "next/link";
 import { Search, Mic, Settings, HelpCircle, UserCircle } from "lucide-react";

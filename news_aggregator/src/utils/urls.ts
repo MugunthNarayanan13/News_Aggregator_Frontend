@@ -1,6 +1,9 @@
+console.log("Loaded API Key:", process.env.NEXT_PUBLIC_API_KEY);
+
 const apiKey = process.env.NEXT_PUBLIC_API_KEY
 export const baseURL = `https://newsdata.io/api/1/latest?apikey=${apiKey}&removeduplicate=1`
 export const sourceURL = `https://newsdata.io/api/1/sources?apikey=${apiKey}`
+
 
 const addKeyWordSearchURL = (url: string, keyword: string)=>{
   return url+`&q="${keyword}"`;

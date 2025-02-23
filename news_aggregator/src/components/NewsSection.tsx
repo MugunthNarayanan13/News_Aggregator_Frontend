@@ -1,20 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useState, useEffect } from "react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/solid";
+import axios from "axios";
 import NewsCardSmall from "@/components/NewsCardSmall";
 import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
 import NewsCardBig, { NewsCardBigProps } from "@/components/NewsCardBig";
+import { fetchNews } from "@/utils/fetchModule"; // Import the fetchNews function
 
 interface NewsSectionProps {
   sectionTitle: string;
-  news: NewsCardSmallProps[];
-  bigNews: NewsCardBigProps | null;
+  categoryUrl: string; // URL to fetch news from
 }
 
-export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
+export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [bigNews, setBigNews] = useState<NewsCardBigProps | null>(null);
+  const [news, setNews] = useState<NewsCardSmallProps[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Function to update items per page based on screen width
   const updateItemsPerPage = () => {
@@ -27,12 +32,26 @@ export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
     }
   };
 
-  // Run once on mount and on window resize
   useEffect(() => {
     updateItemsPerPage();
     window.addEventListener("resize", updateItemsPerPage);
     return () => window.removeEventListener("resize", updateItemsPerPage);
   }, []);
+
+  // Fetch news on component mount or when categoryUrl changes
+  useEffect(() => {
+    const getNews = async () => {
+      setLoading(true);
+      const newsData = await fetchNews(categoryUrl);
+      if (newsData) {
+        setBigNews(newsData[0]);
+        setNews(newsData[1]);
+      }
+      setLoading(false);
+    };
+
+    getNews();
+  }, [categoryUrl]);
 
   // Calculate number of pages
   const totalPages = Math.ceil(news.length / itemsPerPage);
@@ -52,40 +71,46 @@ export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
 
       <div className="relative flex flex-row gap-6 items-center">
         <div className="" id="bigCardWrapper">
-          <NewsCardBig
-            title={bigNews == null ? "Title of News" : bigNews.title}
-            sentiment={bigNews == null ? "positive" : bigNews.sentiment}
-            pubDate={bigNews == null ? "2025-02-10" : bigNews.pubDate}
-            pubLogo={
-              bigNews == null ? "https://www.image.co.in" : bigNews.pubLogo
-            }
-            pubName={bigNews == null ? "Publisher Name" : bigNews.pubName}
-            desc={
-              bigNews == null
-                ? "Description of the news will be present here for display"
-                : bigNews.desc
-            }
-            imgUrl={bigNews == null ? "imageUrl" : bigNews.imgUrl}
-            pubDateTZ={bigNews == null ? "UTC" : bigNews.pubDateTZ}
-          />
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <NewsCardBig
+              title={bigNews ? bigNews.title : "Title of News"}
+              sentiment={bigNews ? bigNews.sentiment : "positive"}
+              pubDate={bigNews ? bigNews.pubDate : "2025-02-10"}
+              pubLogo={bigNews ? bigNews.pubLogo : "https://www.image.co.in"}
+              pubName={bigNews ? bigNews.pubName : "Publisher Name"}
+              desc={
+                bigNews
+                  ? bigNews.desc
+                  : "Description of the news will be present here for display"
+              }
+              imgUrl={bigNews ? bigNews.imgUrl : "imageUrl"}
+              pubDateTZ={bigNews ? bigNews.pubDateTZ : "UTC"}
+            />
+          )}
         </div>
         {/* News Cards */}
         <div
           className="flex flex-row gap-10 ml-4 flex-wrap"
           id="smallCardWrapper"
         >
-          {currentNews.map((n, index) => (
-            <NewsCardSmall
-              key={index}
-              title={n.title}
-              sentiment={n.sentiment}
-              desc={n.desc}
-              pubDate={n.pubDate}
-              pubLogo={n.pubLogo}
-              pubName={n.pubName}
-              pubDateTZ={n.pubDateTZ}
-            />
-          ))}
+          {loading ? (
+            <p>Loading news...</p>
+          ) : (
+            currentNews.map((n, index) => (
+              <NewsCardSmall
+                key={index}
+                title={n.title}
+                sentiment={n.sentiment}
+                desc={n.desc}
+                pubDate={n.pubDate}
+                pubLogo={n.pubLogo}
+                pubName={n.pubName}
+                pubDateTZ={n.pubDateTZ}
+              />
+            ))
+          )}
         </div>
 
         <div className="absolute flex flex-row z-50 right-0 -top-10">
