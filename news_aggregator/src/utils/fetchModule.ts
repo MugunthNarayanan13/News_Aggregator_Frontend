@@ -100,4 +100,3 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
 };
 
 export { fetchNews };
-
