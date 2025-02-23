@@ -33,18 +33,18 @@ interface NewsArticle {
 
 const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallProps[]] | null> => {
   try {
-    console.log("Fetching news from URL:", url); // ✅ Log the API request URL
+    console.log("Fetching news from URL:", url); 
 
     let allNewsData: NewsArticle[] = [];
     let nextPage: string | null = null;
     let currentUrl = url;
 
     for (let i = 0; i < 3; i++) {
-      console.log("API Request Attempt:", i + 1, "URL:", currentUrl); // ✅ Log each API request attempt
+      console.log("API Request Attempt:", i + 1, "URL:", currentUrl); 
 
       const response = await axios.get(currentUrl);
       
-      console.log("API Response Data:", response.data); // ✅ Log the full API response
+      console.log("API Response Data:", response.data); 
 
       const newsData: NewsArticle[] = response.data.results;
 
