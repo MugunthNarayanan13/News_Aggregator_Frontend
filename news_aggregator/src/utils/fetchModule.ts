@@ -78,6 +78,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
       imgUrl: bigNewsItem.image_url || "",
       sentiment: bigNewsItem.sentiment,
       pubDateTZ: bigNewsItem.pubDateTZ,
+      link: bigNewsItem.link,
     };
 
     const remainingSmallNews: NewsCardSmallProps[] = allNewsData
@@ -90,6 +91,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
         pubLogo: news.source_icon,
         sentiment: news.sentiment,
         pubDateTZ: news.pubDateTZ,
+        link: news.link,
       }));
 
     return [selectedBigNews, remainingSmallNews];

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 import { timeAgo } from "@/utils/dateFormatter";
+import { ShareIcon } from "@heroicons/react/24/outline";
 
 export interface NewsCardSmallProps {
   title: string;
@@ -11,10 +12,27 @@ export interface NewsCardSmallProps {
   sentiment: string;
   pubDateTZ: string;
   className?: string;
+  link: string;
 }
 
 const truncateText = (text: string, maxLength: number) => {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+};
+
+const shareNews = async (url: string) => {
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Check out this news article",
+        url: url,
+      });
+    } catch (error) {
+      console.error("Error sharing:", error);
+    }
+  } else {
+    await navigator.clipboard.writeText(url);
+    alert("News link copied to clipboard! 📋");
+  }
 };
 
 export default function NewsCardSmall({
@@ -26,6 +44,7 @@ export default function NewsCardSmall({
   sentiment,
   pubDateTZ,
   className = "",
+  link, 
 }: NewsCardSmallProps) {
   return (
     <div className={className}>
@@ -50,6 +69,14 @@ export default function NewsCardSmall({
           <div className="flex-1 text-white text-xs md:text-sm lg:text-base ml-3">
             {pubName}
           </div>
+          
+          {/* Share Button */}
+          <button
+            onClick={() => shareNews(link)}
+            className="px-4 text-white hover:opacity-80 transition"
+          >
+            <ShareIcon className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>
