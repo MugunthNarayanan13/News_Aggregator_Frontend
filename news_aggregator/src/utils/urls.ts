@@ -56,18 +56,18 @@ const allPublishersURL = (countries: string[], langs=['en'], categories=[]) =>{
   countries.forEach((country)=>{
     url = url + country +",";
   })
-  url = url.slice(0, url.length);
+  url = url.slice(0, url.length-1);
   url+="&language=";
   langs.forEach((lang)=>{
     url = url + `${lang},`;
   })
-  url = url.slice(0, url.length);
+  url = url.slice(0, url.length-1);
   if(categories.length>0){
     url+="&category=";
     categories.forEach((category)=>{
       url = url + `${category},`
     })
-    url = url.slice(0, url.length);
+    url = url.slice(0, url.length-1);
   }
   return url;
 }
