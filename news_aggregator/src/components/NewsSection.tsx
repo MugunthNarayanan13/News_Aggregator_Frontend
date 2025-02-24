@@ -2,17 +2,33 @@
 
 import React, { useState, useEffect } from "react";
 import { ChevronRightIcon, ChevronLeftIcon } from "@heroicons/react/24/solid";
-import NewsCardSmall from "@/components/NewsCardSmall";
 import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
-import NewsCardBig, { NewsCardBigProps } from "@/components/NewsCardBig";
+import type { NewsCardBigProps } from "@/components/NewsCardBig";
+import NewsCardSmall from "@/components/NewsCardSmall";
+import NewsCardBig from "@/components/NewsCardBig";
+import { fetchNews } from "@/utils/fetchModule";
 
 interface NewsSectionProps {
   sectionTitle: string;
-  news: NewsCardSmallProps[];
-  bigNews: NewsCardBigProps | null;
+  categoryUrl: string;
 }
 
-export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
+interface NewsState {
+  bigNews: NewsCardBigProps | null;
+  smallNews: NewsCardSmallProps[];
+  loading: boolean;
+  error: string | null;
+}
+
+const INITIAL_NEWS_STATE: NewsState = {
+  bigNews: null,
+  smallNews: [],
+  loading: true,
+  error: null,
+};
+
+export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
+  const [newsState, setNewsState] = useState<NewsState>(INITIAL_NEWS_STATE);
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
@@ -22,101 +38,113 @@ export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
       setItemsPerPage(2); // Mobile (small screens)
     } else if (window.innerWidth < 1024) {
       setItemsPerPage(4); // Tablet (medium screens)
-    } else {
-      setItemsPerPage(6); // Desktop (large screens)
     }
+    else setItemsPerPage(6);
   };
 
-  // Run once on mount and on window resize
   useEffect(() => {
     updateItemsPerPage();
-    window.addEventListener("resize", updateItemsPerPage);
-    return () => window.removeEventListener("resize", updateItemsPerPage);
+    const handleResize = () => {
+      updateItemsPerPage();
+      setPageIndex(0);
+    };
+    
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Calculate number of pages
-  const totalPages = Math.ceil(news.length / itemsPerPage);
+  useEffect(() => {
+    const getNews = async () => {
+      setNewsState(prev => ({ ...prev, loading: true, error: null }));
+      
+      try {
+        const newsData = await fetchNews(categoryUrl);
+        
+        if (!newsData) {
+          throw new Error("Failed to fetch news data");
+        }
 
-  // Get the current set of news items
-  const currentNews = news.slice(
+        const [bigNews, smallNews] = newsData;
+        setNewsState({
+          bigNews,
+          smallNews,
+          loading: false,
+          error: null,
+        });
+        
+        setPageIndex(0);
+      } catch (error) {
+        setNewsState(prev => ({
+          ...prev,
+          loading: false,
+          error: error instanceof Error ? error.message : "An error occurred while fetching news",
+        }));
+      }
+    };
+
+    getNews();
+  }, [categoryUrl]);
+
+  const totalPages = Math.ceil(newsState.smallNews.length / itemsPerPage);
+  const currentNews = newsState.smallNews.slice(
     pageIndex * itemsPerPage,
     (pageIndex + 1) * itemsPerPage
   );
 
   return (
-    <div
-      className="flex flex-col font-roboto bg-foreground_light rounded-[30px] p-4 pb-8"
-      id="newsSectionWrapper"
-    >
-      <div className="text-2xl font-light ml-3 mb-2">{sectionTitle}</div>
-
-      <div className="relative flex flex-row gap-6 items-center">
-        <div className="" id="bigCardWrapper">
-          <NewsCardBig
-            title={bigNews == null ? "Title of News" : bigNews.title}
-            sentiment={bigNews == null ? "positive" : bigNews.sentiment}
-            pubDate={bigNews == null ? "2025-02-10" : bigNews.pubDate}
-            pubLogo={
-              bigNews == null ? "https://www.image.co.in" : bigNews.pubLogo
-            }
-            pubName={bigNews == null ? "Publisher Name" : bigNews.pubName}
-            desc={
-              bigNews == null
-                ? "Description of the news will be present here for display"
-                : bigNews.desc
-            }
-            imgUrl={bigNews == null ? "imageUrl" : bigNews.imgUrl}
-            pubDateTZ={bigNews == null ? "UTC" : bigNews.pubDateTZ}
-          />
-        </div>
-        {/* News Cards */}
-        {/* // */}
-        <div
-          className="flex flex-row gap-10 ml-4 flex-wrap"
-          id="smallCardWrapper"
-        >
-          {currentNews.map((n, index) => (
-            <NewsCardSmall
-              key={index}
-              title={n.title}
-              sentiment={n.sentiment}
-              desc={n.desc}
-              pubDate={n.pubDate}
-              pubLogo={n.pubLogo}
-              pubName={n.pubName}
-              pubDateTZ={n.pubDateTZ}
-            />
-          ))}
-        </div>
-
-        <div className="absolute flex flex-row z-40 right-0 -top-10">
-          {/* Left Arrow */}
+    <div className="flex flex-col font-roboto bg-foreground_light rounded-[30px] p-4 pb-8">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-light">{sectionTitle}</h2>
+        <div className="flex space-x-2">
           <button
-            onClick={() => setPageIndex((prev) => Math.max(prev - 1, 0))}
+            onClick={() => setPageIndex(prev => Math.max(prev - 1, 0))}
             disabled={pageIndex === 0}
-            className={`p-2 rounded-full ${
-              pageIndex === 0
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-300"
-            }`}
+            className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronLeftIcon className="w-4 h-4" />
           </button>
           <button
-            onClick={() =>
-              setPageIndex((prev) => Math.min(prev + 1, totalPages - 1))
-            }
+            onClick={() => setPageIndex(prev => Math.min(prev + 1, totalPages - 1))}
             disabled={pageIndex === totalPages - 1}
-            className={`p-2 rounded-full ${
-              pageIndex === totalPages - 1
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-300"
-            }`}
+            className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronRightIcon className="w-4 h-4" />
           </button>
         </div>
       </div>
+
+      {newsState.loading ? (
+        <div className="flex items-center justify-center h-48">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+        </div>
+      ) : newsState.error ? (
+        <div className="text-red-600 p-4">{newsState.error}</div>
+      ) : (
+        <div className="flex flex-col space-y-4">
+          {/* News Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Big News Card */}
+            {newsState.bigNews && (
+              <div className="md:col-span-1">
+                <NewsCardBig {...newsState.bigNews} />
+              </div>
+            )}
+            
+            {/* Small News Cards */}
+            <div className="md:col-span-1 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {currentNews.map((news, index) => (
+                <div key={`${news.pubDate}-${index}`} className="h-full">
+                  <div className="bg-white rounded-lg shadow-md h-full flex flex-col">
+                    <NewsCardSmall
+                      {...news}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
