@@ -12,19 +12,26 @@ interface SingleSelectDropdownPublishersProps {
   onSelect: (selectedPublisher: string | null) => void;
 }
 
-const SingleSelectDropdownPublishers: React.FC<SingleSelectDropdownPublishersProps> = ({ onSelect }) => {
+const SingleSelectDropdownPublishers: React.FC<
+  SingleSelectDropdownPublishersProps
+> = ({ onSelect }) => {
   const [publishers, setPublishers] = useState<Publisher[]>([]);
-  const [selectedOption, setSelectedOption] = useState<{ label: string; value: string } | null>(null);
+  const [selectedOption, setSelectedOption] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
 
   useEffect(() => {
     const fetchPublishers = async () => {
       try {
         const response = await axios.get(allPublishersURL(["in"], ["en"]));
         if (response.data.status === "success") {
-          const publisherList: Publisher[] = response.data.results.map((item: any) => ({
-            id: item.id,
-            name: item.name,
-          }));
+          const publisherList: Publisher[] = response.data.results.map(
+            (item: any) => ({
+              id: item.id,
+              name: item.name,
+            })
+          );
           setPublishers(publisherList);
         }
       } catch (error) {
@@ -44,6 +51,11 @@ const SingleSelectDropdownPublishers: React.FC<SingleSelectDropdownPublishersPro
     <Select
     className="flex-1"
       options={publishers.map((publisher) => ({ label: publisher.name, value: publisher.name }))}
+
+      options={publishers.map((publisher) => ({
+        label: publisher.name,
+        value: publisher.name,
+      }))}
       value={selectedOption}
       onChange={handleChange}
       placeholder="Select Publisher..."
