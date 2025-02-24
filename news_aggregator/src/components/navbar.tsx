@@ -9,12 +9,14 @@ interface NavBarProps {
   searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   onSearchSubmit: () => void;
+  onCategorySelect: (category: "local" | "world" | "politics" | "technology" | "business" | "sports" | "entertainment") => void; // Function for scrolling
 }
 
 export default function NavBar({
   searchText,
   setSearchText,
   onSearchSubmit,
+  onCategorySelect ,
 }: NavBarProps) {
   const [publisherList, setPublisherList] = useState<string | null>(null);
 
@@ -73,24 +75,24 @@ export default function NavBar({
 
       <div className="bg-foreground_light py-3 rounded-3xl w-fit px-5 mx-auto mt-2 flex flex-col gap-2">
         <div className="container mx-auto flex justify-center gap-6 text-sm">
-          <Link href="#" className="text-black hover:text-black">
+          <button onClick={() => onCategorySelect("world")} className="text-black hover:text-black">
             World
-          </Link>
-          <Link href="#" className="text-black hover:text-black">
+          </button>
+          <button onClick={() => onCategorySelect("politics")} className="text-black hover:text-black">
             Politics
-          </Link>
-          <Link href="#" className="text-black hover:text-black">
+          </button>
+          <button onClick={() => onCategorySelect("technology")} className="text-black hover:text-black">
             Technology
-          </Link>
-          <Link href="#" className="text-black hover:text-black">
+          </button>
+          <button onClick={() => onCategorySelect("business")} className="text-black hover:text-black">
             Business
-          </Link>
-          <Link href="#" className="text-black hover:text-black">
+          </button>
+          <button onClick={() => onCategorySelect("sports")} className="text-black hover:text-black">
             Sports
-          </Link>
-          <Link href="#" className="text-black hover:text-black">
+          </button>
+          <button onClick={() => onCategorySelect("entertainment")} className="text-black hover:text-black">
             Entertainment
-          </Link>
+          </button>
         </div>
         <MultiSelectDropdownPublishers onSelect={onPubSelect} />
       </div>
