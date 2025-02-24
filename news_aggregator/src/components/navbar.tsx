@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Search, Mic, Settings, HelpCircle, UserCircle } from "lucide-react";
 import MultiSelectDropdownPublishers from "./publisherDropDown";
 import { useState } from "react";
+import SpeechToText from "@/components/voice";
 
 interface NavBarProps {
   searchText: string;
@@ -70,7 +71,8 @@ export default function NavBar({
             ) : (
               ""
             )}
-            <Mic size={18} className="text-black cursor-pointer" />
+            {/* Voice Input Button */}
+            <SpeechToText setSearchText={setSearchText} />
           </div>
         </div>
 
@@ -135,7 +137,7 @@ export default function NavBar({
           <select
             value={timeframe}
             onChange={handleTimeframeChange}
-            className="bg-white text-black px-3 py-2 rounded-md border border-gray-300 focus:outline-none text-gray-500"
+            className="bg-white text-black px-3 py-2 rounded-md border border-gray-300 focus:outline-none"
           >
             <option value="">Select Timeframe</option>
             <optgroup label="Hours">
