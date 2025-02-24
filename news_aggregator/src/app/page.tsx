@@ -1,4 +1,4 @@
-/* eslint-disable react/no-unescaped-entities */
+ 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -13,48 +13,22 @@ import {
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
 import { fetchNews } from "@/utils/fetchModule";
-import { NewsCardBigProps } from "@/components/NewsCardBig";
-import { NewsCardSmallProps } from "@/components/NewsCardSmall";
-import { languageWiseURL } from "@/utils/urls";
+import { addKeyWordSearchURL, addLanguageWiseURL, baseURL } from "@/utils/urls";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
-  const [bigNews, setBigNews] = useState<NewsCardBigProps | null>(null);
-  const [smallNews, setSmallNews] = useState<NewsCardSmallProps[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchText, setSearchText] = useState<string>("");
 
-  // Fetch news based on selected category
-  const fetch = async (category: string) => {
-    let url = languageWiseURL(["en", "hi"]);
-
-    if (category !== "all") {
-      url += `&category=${category}`;
-    }
-
-    const newsData = await fetchNews(url);
-
-    if (!newsData) {
-      console.error("No news data available.");
-      return;
-    }
-
-    const [bigNews, smallNews] = newsData;
-    setBigNews(bigNews);
-    setSmallNews(smallNews);
+  const onSearchSubmit = async () => {
+    console.log("Hello ", searchText);
   };
 
   // Fetch news when component mounts or category changes
   useEffect(() => {
-    fetch(selectedCategory);
-
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      if (currentScrollY < lastScrollY) {
-        setIsBottomDivExpanded(true);
-      } else {
-        setIsBottomDivExpanded(false);
-      }
+      setIsBottomDivExpanded(currentScrollY < lastScrollY);
       lastScrollY = currentScrollY;
     };
 
@@ -64,25 +38,20 @@ export default function HomePage() {
 
   return (
     <Main>
-      <NavBar />
-
-      {/* Category Filter Buttons */}
-      <div className="flex gap-4 justify-center mt-4">
-        {["all", "technology", "sports", "health", "entertainment"].map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? "primary" : "outline"}
-            onClick={() => setSelectedCategory(category)}
-          >
-            {category.charAt(0).toUpperCase() + category.slice(1)}
-          </Button>
-        ))}
-      </div>
-
-      {/* News Sections */}
+      <NavBar
+        searchText={searchText}
+        setSearchText={setSearchText}
+        onSearchSubmit={onSearchSubmit}
+      />
       <div className="flex flex-col mx-4 mt-4 p-6 gap-6 dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
-        <NewsSection sectionTitle="Latest News" news={smallNews} bigNews={bigNews} />
-        <NewsSection sectionTitle="Global News" news={smallNews} bigNews={bigNews} />
+        <NewsSection
+          sectionTitle="Latest News"
+          categoryUrl={addLanguageWiseURL(baseURL, ["en", "hi"])}
+        />
+        <NewsSection
+          sectionTitle="Global News"
+          categoryUrl={addLanguageWiseURL(baseURL, ["en"])}
+        />
       </div>
     </Main>
   );

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { NewsCardBigProps } from "@/components/NewsCardBig";
 import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
 import axios from "axios";
@@ -30,17 +31,27 @@ interface NewsArticle {
     video_url?: string | null;
 }
 
-const fetchNews = async (url: string, category?: string): Promise<[NewsCardBigProps, NewsCardSmallProps[]] | null> => {
-    try {
-        let allNewsData: NewsArticle[] = [];
-        let nextPage: string | null = null;
-        let currentUrl = category ? `${url}&category=${category.toLowerCase()}` : url;
+const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallProps[]] | null> => {
+  try {
+    console.log("Fetching news from URL:", url); 
 
-        for (let i = 0; i < 3; i++) {
-            const response = await axios.get(currentUrl);
-            const newsData: NewsArticle[] = response.data.results;
+    let allNewsData: NewsArticle[] = [];
+    let nextPage: string | null = null;
+    let currentUrl = url;
 
-            if (!newsData || newsData.length === 0) break;
+    for (let i = 0; i < 3; i++) {
+      console.log("API Request Attempt:", i + 1, "URL:", currentUrl); 
+
+      const response = await axios.get(currentUrl);
+      
+      console.log("API Response Data:", response.data); 
+
+      const newsData: NewsArticle[] = response.data.results;
+
+      if (!newsData || newsData.length === 0) {
+        console.log("No news data received.");
+        break;
+      }
 
             allNewsData = [...allNewsData, ...newsData];
 
@@ -50,39 +61,44 @@ const fetchNews = async (url: string, category?: string): Promise<[NewsCardBigPr
             currentUrl = `${url}&page=${nextPage}`;
         }
 
-        if (allNewsData.length === 0) return null;
+    if (allNewsData.length === 0) {
+      console.log("No valid news data available.");
+      return null;
+    }
 
         const randomIndex = Math.floor(Math.random() * allNewsData.length);
         const bigNewsItem = allNewsData[randomIndex];
 
-        const selectedBigNews: NewsCardBigProps = {
-            title: bigNewsItem.title,
-            desc: bigNewsItem.description,
-            pubDate: bigNewsItem.pubDate,
-            pubName: bigNewsItem.source_name,
-            pubLogo: bigNewsItem.source_icon,
-            imgUrl: bigNewsItem.image_url || "",
-            sentiment: bigNewsItem.sentiment,
-            pubDateTZ: bigNewsItem.pubDateTZ,
-        };
+    const selectedBigNews: NewsCardBigProps = {
+      title: bigNewsItem.title,
+      desc: bigNewsItem.description,
+      pubDate: bigNewsItem.pubDate,
+      pubName: bigNewsItem.source_name,
+      pubLogo: bigNewsItem.source_icon,
+      imgUrl: bigNewsItem.image_url || "",
+      sentiment: bigNewsItem.sentiment,
+      pubDateTZ: bigNewsItem.pubDateTZ,
+      link: bigNewsItem.link,
+    };
 
-        const remainingSmallNews: NewsCardSmallProps[] = allNewsData
-            .filter((_, index) => index !== randomIndex)
-            .map((news) => ({
-                title: news.title,
-                desc: news.description,
-                pubDate: news.pubDate,
-                pubName: news.source_name,
-                pubLogo: news.source_icon,
-                sentiment: news.sentiment,
-                pubDateTZ: news.pubDateTZ,
-            }));
+    const remainingSmallNews: NewsCardSmallProps[] = allNewsData
+      .filter((_, index) => index !== randomIndex)
+      .map((news) => ({
+        title: news.title,
+        desc: news.description,
+        pubDate: news.pubDate,
+        pubName: news.source_name,
+        pubLogo: news.source_icon,
+        sentiment: news.sentiment,
+        pubDateTZ: news.pubDateTZ,
+        link: news.link,
+      }));
 
-        return [selectedBigNews, remainingSmallNews];
-    } catch (error) {
-        console.error("Error fetching news:", error);
-        return null;
-    }
+    return [selectedBigNews, remainingSmallNews];
+  } catch (error: any) {
+    console.error("Error fetching news:", error.response?.status, error.response?.data);
+    return null;
+  }
 };
 
 export { fetchNews };
