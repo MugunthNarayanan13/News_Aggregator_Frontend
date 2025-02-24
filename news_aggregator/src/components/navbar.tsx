@@ -4,19 +4,29 @@ import Link from "next/link";
 import { Search, Mic, Settings, HelpCircle, UserCircle } from "lucide-react";
 import MultiSelectDropdownPublishers from "./publisherDropDown";
 import { useState } from "react";
+import SpeechToText from "@/components/voice";
 
 interface NavBarProps {
   searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   onSearchSubmit: () => void;
-  onCategorySelect: (category: "local" | "world" | "politics" | "technology" | "business" | "sports" | "entertainment") => void; // Function for scrolling
+  onCategorySelect: (
+    category:
+      | "local"
+      | "world"
+      | "politics"
+      | "technology"
+      | "business"
+      | "sports"
+      | "entertainment"
+  ) => void; // Function for scrolling
 }
 
 export default function NavBar({
   searchText,
   setSearchText,
   onSearchSubmit,
-  onCategorySelect ,
+  onCategorySelect,
 }: NavBarProps) {
   const [publisherList, setPublisherList] = useState<string | null>(null);
   const [timeframe, setTimeframe] = useState<string>("");
@@ -26,7 +36,9 @@ export default function NavBar({
     console.log(publishers);
   };
 
-  const handleTimeframeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleTimeframeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setTimeframe(event.target.value);
     console.log("Selected timeframe:", event.target.value);
   };
@@ -63,7 +75,8 @@ export default function NavBar({
             ) : (
               ""
             )}
-            <Mic size={18} className="text-black cursor-pointer" />
+            {/* Voice Input Button */}
+            <SpeechToText setSearchText={setSearchText} />
           </div>
         </div>
 
@@ -82,22 +95,40 @@ export default function NavBar({
 
       <div className="bg-foreground_light py-3 rounded-2xl w-fit px-5 mx-auto mt-2 flex flex-col gap-2">
         <div className="container mx-auto flex justify-center gap-6 text-sm">
-          <button onClick={() => onCategorySelect("world")} className="text-black hover:text-black">
+          <button
+            onClick={() => onCategorySelect("world")}
+            className="text-black hover:text-black"
+          >
             World
           </button>
-          <button onClick={() => onCategorySelect("politics")} className="text-black hover:text-black">
+          <button
+            onClick={() => onCategorySelect("politics")}
+            className="text-black hover:text-black"
+          >
             Politics
           </button>
-          <button onClick={() => onCategorySelect("technology")} className="text-black hover:text-black">
+          <button
+            onClick={() => onCategorySelect("technology")}
+            className="text-black hover:text-black"
+          >
             Technology
           </button>
-          <button onClick={() => onCategorySelect("business")} className="text-black hover:text-black">
+          <button
+            onClick={() => onCategorySelect("business")}
+            className="text-black hover:text-black"
+          >
             Business
           </button>
-          <button onClick={() => onCategorySelect("sports")} className="text-black hover:text-black">
+          <button
+            onClick={() => onCategorySelect("sports")}
+            className="text-black hover:text-black"
+          >
             Sports
           </button>
-          <button onClick={() => onCategorySelect("entertainment")} className="text-black hover:text-black">
+          <button
+            onClick={() => onCategorySelect("entertainment")}
+            className="text-black hover:text-black"
+          >
             Entertainment
           </button>
         </div>
