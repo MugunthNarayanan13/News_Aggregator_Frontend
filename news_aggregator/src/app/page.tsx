@@ -12,6 +12,7 @@ import {
   addCategoryWiseURL,
   addLanguageWiseURL,
   addKeyWordSearchURL,
+  addPublisherWiseURL,
   baseURL,
 } from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
@@ -19,7 +20,9 @@ import { NewsCardBigProps } from "@/components/NewsCardBig";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isPubModalOpen, setIsPubModalOpen] = useState(false);
+  const [publisher, setpublisher] = useState<string | null>(null);
   const [searchResult, setSearchResult] = useState<NewsCardBigProps[]>([]);
   const [searchText, setSearchText] = useState<string>("");
 
@@ -70,7 +73,7 @@ export default function HomePage() {
 
   const onSearchSubmit = async () => {
     console.log("Hello ", searchText);
-    setIsModalOpen(true);
+    setIsSearchModalOpen(true);
 
     const newsData = await fetchNewsOnlyBig(
       addKeyWordSearchURL(addLanguageWiseURL(baseURL, ["en", "hi"]), searchText)
@@ -79,6 +82,24 @@ export default function HomePage() {
       console.log("No news data for search result");
     } else {
       setSearchResult(newsData);
+    }
+  };
+
+  const onPubSelect = async (publishers: string | null) => {
+    setpublisher(publishers);
+    console.log(publishers);
+    if (publishers != null) {
+      setIsPubModalOpen(true);
+      const newsData = await fetchNewsOnlyBig(
+        addPublisherWiseURL(addLanguageWiseURL(baseURL, ["en", "hi"]), [
+          publishers,
+        ])
+      );
+      if (!newsData) {
+        console.log("No news data for publisher search result");
+      } else {
+        setSearchResult(newsData);
+      }
     }
   };
 
@@ -98,16 +119,33 @@ export default function HomePage() {
   return (
     <Main>
       <div></div>
+      {/* Modal for displaying search results */}
       <NewsSectionSearch
         sectionTitle={searchText}
         news={searchResult}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isSearchModalOpen}
+        onClose={() => {
+          setIsSearchModalOpen(false);
+          setSearchText("");
+          setSearchResult([]);
+        }}
+      />
+      {/* Modal for displaying publisher filter results */}
+      <NewsSectionSearch
+        sectionTitle={"Publisher"}
+        news={searchResult}
+        isOpen={isPubModalOpen}
+        onClose={() => {
+          setIsPubModalOpen(false);
+          setpublisher(null);
+          setSearchResult([]);
+        }}
       />
       <NavBar
         searchText={searchText}
         setSearchText={setSearchText}
         onSearchSubmit={onSearchSubmit}
+        onPubSelect={onPubSelect}
         onCategorySelect={scrollToSection} // Pass scrolling function to NavBar
       />
 

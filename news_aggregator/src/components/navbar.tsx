@@ -10,6 +10,7 @@ interface NavBarProps {
   searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   onSearchSubmit: () => void;
+  onPubSelect: (publishers: string | null) => void;
   onCategorySelect: (
     category:
       | "local"
@@ -27,14 +28,9 @@ export default function NavBar({
   setSearchText,
   onSearchSubmit,
   onCategorySelect,
+  onPubSelect,
 }: NavBarProps) {
-  const [publisherList, setPublisherList] = useState<string | null>(null);
   const [timeframe, setTimeframe] = useState<string>("");
-
-  const onPubSelect = (publishers: string | null) => {
-    setPublisherList(publishers);
-    console.log(publishers);
-  };
 
   const handleTimeframeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -141,7 +137,7 @@ export default function NavBar({
           <select
             value={timeframe}
             onChange={handleTimeframeChange}
-            className="bg-white text-black px-3 py-2 rounded-md border border-gray-300 focus:outline-none text-gray-500"
+            className="bg-white text-black px-3 py-2 rounded-md border border-gray-300 focus:outline-none"
           >
             <option value="">Select Timeframe</option>
             <optgroup label="Hours">

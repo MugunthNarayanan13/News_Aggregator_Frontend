@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Select from "react-select";
 import axios from "axios";
 import { allPublishersURL } from "@/utils/urls";
+import { getCachedData, setCachedData } from "@/utils/fetchModule";
 
 interface Publisher {
   id: string;
@@ -23,24 +24,32 @@ const SingleSelectDropdownPublishers: React.FC<
 
   useEffect(() => {
     const fetchPublishers = async () => {
+      const cacheKey = "publishers_cache";
+      const cachedPublishers = getCachedData(cacheKey);
+      if (cachedPublishers) {
+        setPublishers(cachedPublishers);
+        return;
+      }
+  
       try {
         const response = await axios.get(allPublishersURL(["in"], ["en"]));
         if (response.data.status === "success") {
-          const publisherList: Publisher[] = response.data.results.map(
-            (item: any) => ({
-              id: item.id,
-              name: item.name,
-            })
-          );
+          const publisherList: Publisher[] = response.data.results.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+          }));
+          
           setPublishers(publisherList);
+          setCachedData(cacheKey, publisherList);
         }
       } catch (error) {
         console.error("Error fetching publishers:", error);
       }
     };
-
+  
     fetchPublishers();
   }, []);
+  
 
   const handleChange = (selected: { label: string; value: string } | null) => {
     setSelectedOption(selected);
@@ -49,12 +58,10 @@ const SingleSelectDropdownPublishers: React.FC<
 
   return (
     <Select
-    className="flex-1"
-      options={publishers.map((publisher) => ({ label: publisher.name, value: publisher.name }))}
-
+      className="flex-1"
       options={publishers.map((publisher) => ({
         label: publisher.name,
-        value: publisher.name,
+        value: publisher.id,
       }))}
       value={selectedOption}
       onChange={handleChange}
