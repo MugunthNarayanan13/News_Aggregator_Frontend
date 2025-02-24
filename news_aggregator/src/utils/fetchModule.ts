@@ -76,7 +76,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
         let nextPage: string | null = null;
         let currentUrl = url;
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             console.log("API Request Attempt:", i + 1, "URL:", currentUrl);
 
             const response = await axios.get(currentUrl);
@@ -133,7 +133,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
         const result = [selectedBigNews, remainingSmallNews];
 
         // Cache the data
-        setCachedData(cacheKey, result);
+        if(result.length > 0) setCachedData(cacheKey, result);
 
         return [selectedBigNews, remainingSmallNews];
     } catch (error: any) {
@@ -161,7 +161,7 @@ const fetchNewsOnlyBig = async (url: string): Promise<NewsCardBigProps[] | null>
         let nextPage: string | null = null;
         let currentUrl = url;
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             console.log("API Request Attempt:", i + 1, "URL:", currentUrl);
 
             const response = await axios.get(currentUrl);
@@ -200,7 +200,9 @@ const fetchNewsOnlyBig = async (url: string): Promise<NewsCardBigProps[] | null>
         }));
 
         // Cache the data
-        setCachedData(cacheKey, bigCardNews);
+        if (bigCardNews.length > 0) {
+          setCachedData(cacheKey, bigCardNews);
+        }
 
         return bigCardNews;
     } catch (error: any) {
