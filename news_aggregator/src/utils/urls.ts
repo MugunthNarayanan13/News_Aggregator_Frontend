@@ -35,6 +35,11 @@ const addLanguageWiseURL = (url: string, langs: string[]) =>{
   return url.slice(0,url.length);
 }
 
+const addTimeframeURL = (url: string, timeframe: string) => {
+  url = url+"&timeframe="+timeframe;
+  return url;
+}
+
 const addPublisherWiseURL = (url: string, domains: string[]) =>{
   url = url+`&domain=`;
   domains.forEach((domain)=>{
@@ -79,5 +84,6 @@ export {
   addLanguageWiseURL,
   addPublisherWiseURL,
   addRegionWiseURL,
-  allPublishersURL
+  allPublishersURL,
+  addTimeframeURL
 }
