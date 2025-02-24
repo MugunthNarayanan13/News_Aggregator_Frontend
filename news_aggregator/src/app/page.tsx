@@ -1,4 +1,3 @@
- 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -12,17 +11,28 @@ import {
 } from "@heroicons/react/24/solid";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
-import { fetchNews } from "@/utils/fetchModule";
+import { fetchNews, fetchNewsOnlyBig } from "@/utils/fetchModule";
 import { addKeyWordSearchURL, addLanguageWiseURL, baseURL } from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchResult, setSearchResult] = useState(null);
   const [searchText, setSearchText] = useState<string>("");
 
   const onSearchSubmit = async () => {
     console.log("Hello ", searchText);
+    setIsModalOpen(true);
+
+    const newsData = await fetchNewsOnlyBig(
+      addKeyWordSearchURL(addLanguageWiseURL(baseURL, ["en", "hi"]), searchText)
+    );
+    if (!newsData) {
+      console.log("No news data for search result");
+    } else {
+      setSearchResult(newsData);
+    }
   };
 
   useEffect(() => {
@@ -40,100 +50,9 @@ export default function HomePage() {
     <Main>
       <div></div>
       <NewsSectionSearch
-        sectionTitle="AI Developments"
-        news={[
-          {
-            title: "AI Breakthrough in Natural Language Processing",
-            sentiment: "positive",
-            desc: "Researchers unveil a new model that outperforms previous benchmarks in understanding human language.",
-            pubDate: "2025-02-23T10:00:00Z",
-            pubLogo: "https://example.com/logos/techcrunch.png",
-            pubName: "TechCrunch",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/ai-nlp.jpg",
-          },
-          {
-            title: "Concerns Rise Over AI Ethics",
-            sentiment: "negative",
-            desc: "A recent report highlights potential biases in AI systems, sparking debate among experts.",
-            pubDate: "2025-02-22T15:30:00Z",
-            pubLogo: "https://example.com/logos/bbc.png",
-            pubName: "BBC News",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/ai-ethics.jpg",
-          },
-          {
-            title: "xAI Announces New AI Research Initiative",
-            sentiment: "neutral",
-            desc: "The company plans to explore AI applications in space exploration over the next year.",
-            pubDate: "2025-02-21T09:15:00Z",
-            pubLogo: "https://example.com/logos/xai.png",
-            pubName: "xAI Blog",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/xai-research.jpg",
-          },
-          {
-            title: "AI Breakthrough in Natural Language Processing",
-            sentiment: "positive",
-            desc: "Researchers unveil a new model that outperforms previous benchmarks in understanding human language.",
-            pubDate: "2025-02-23T10:00:00Z",
-            pubLogo: "https://example.com/logos/techcrunch.png",
-            pubName: "TechCrunch",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/ai-nlp.jpg",
-          },
-          {
-            title: "Concerns Rise Over AI Ethics",
-            sentiment: "negative",
-            desc: "A recent report highlights potential biases in AI systems, sparking debate among experts.",
-            pubDate: "2025-02-22T15:30:00Z",
-            pubLogo: "https://example.com/logos/bbc.png",
-            pubName: "BBC News",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/ai-ethics.jpg",
-          },
-          {
-            title: "xAI Announces New AI Research Initiative",
-            sentiment: "neutral",
-            desc: "The company plans to explore AI applications in space exploration over the next year.",
-            pubDate: "2025-02-21T09:15:00Z",
-            pubLogo: "https://example.com/logos/xai.png",
-            pubName: "xAI Blog",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/xai-research.jpg",
-          },
-          {
-            title: "AI Breakthrough in Natural Language Processing",
-            sentiment: "positive",
-            desc: "Researchers unveil a new model that outperforms previous benchmarks in understanding human language.",
-            pubDate: "2025-02-23T10:00:00Z",
-            pubLogo: "https://example.com/logos/techcrunch.png",
-            pubName: "TechCrunch",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/ai-nlp.jpg",
-          },
-          {
-            title: "Concerns Rise Over AI Ethics",
-            sentiment: "negative",
-            desc: "A recent report highlights potential biases in AI systems, sparking debate among experts.",
-            pubDate: "2025-02-22T15:30:00Z",
-            pubLogo: "https://example.com/logos/bbc.png",
-            pubName: "BBC News",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/ai-ethics.jpg",
-          },
-          {
-            title: "xAI Announces New AI Research Initiative",
-            sentiment: "neutral",
-            desc: "The company plans to explore AI applications in space exploration over the next year.",
-            pubDate: "2025-02-21T09:15:00Z",
-            pubLogo: "https://example.com/logos/xai.png",
-            pubName: "xAI Blog",
-            pubDateTZ: "UTC",
-            imgUrl: "https://example.com/images/xai-research.jpg",
-          },
-        ]}
-        isOpen={true}
+        sectionTitle={searchText}
+        news={searchResult}
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
 

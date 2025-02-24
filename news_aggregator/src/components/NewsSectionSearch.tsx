@@ -55,6 +55,7 @@ export function NewsSectionSearch({
               pubLogo={n.pubLogo}
               imgUrl={n.imgUrl}
               sentiment={n.sentiment}
+              link={n.link}
             />
           ))}
         </div>
