@@ -133,7 +133,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
         const result = [selectedBigNews, remainingSmallNews];
 
         // Cache the data
-        setCachedData(cacheKey, result);
+        if(result.length > 0) setCachedData(cacheKey, result);
 
         return [selectedBigNews, remainingSmallNews];
     } catch (error: any) {
@@ -200,7 +200,9 @@ const fetchNewsOnlyBig = async (url: string): Promise<NewsCardBigProps[] | null>
         }));
 
         // Cache the data
-        setCachedData(cacheKey, bigCardNews);
+        if (bigCardNews.length > 0) {
+          setCachedData(cacheKey, bigCardNews);
+        }
 
         return bigCardNews;
     } catch (error: any) {
