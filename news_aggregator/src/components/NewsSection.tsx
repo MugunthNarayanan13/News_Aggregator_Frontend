@@ -89,7 +89,7 @@ export function NewsSection({ sectionTitle, news, bigNews }: NewsSectionProps) {
           ))}
         </div>
 
-        <div className="absolute flex flex-row z-50 right-0 -top-10">
+        <div className="absolute flex flex-row z-40 right-0 -top-10">
           {/* Left Arrow */}
           <button
             onClick={() => setPageIndex((prev) => Math.max(prev - 1, 0))}
