@@ -31,16 +31,17 @@ interface NewsArticle {
     video_url?: string | null;
 }
 
-// Cache expiration time in milliseconds (e.g., 30 minutes)
-const CACHE_EXPIRATION_TIME = 30 * 60 * 1000;
 
 const getCachedData = (key: string): any | null => {
+  // Cache expiration time in milliseconds (e.g., 30 minutes)
+  const CACHE_EXPIRATION_TIME = 30 * 60 * 1000;
+
     const cached = localStorage.getItem(key);
     if (!cached) return null;
 
     const parsed = JSON.parse(cached);
     const now = new Date().getTime();
-
+    console.log(now, parsed.timestamp, now-parsed.timestamp)
     // Check if cache is expired
     if (now - parsed.timestamp > CACHE_EXPIRATION_TIME) {
         localStorage.removeItem(key);
@@ -208,4 +209,4 @@ const fetchNewsOnlyBig = async (url: string): Promise<NewsCardBigProps[] | null>
     }
 };
 
-export { fetchNews, fetchNewsOnlyBig };
+export { fetchNews, fetchNewsOnlyBig, getCachedData, setCachedData };
