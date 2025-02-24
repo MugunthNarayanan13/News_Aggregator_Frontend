@@ -4,31 +4,31 @@ import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
 import axios from "axios";
 
 interface NewsArticle {
-  ai_org?: string;
-  ai_region?: string;
-  ai_tag?: string;
-  article_id: string;
-  category: string[];
-  content?: string;
-  country: string[];
-  creator?: string | null;
-  description: string;
-  duplicate: boolean;
-  image_url?: string;
-  keywords: string[];
-  language: string;
-  link: string;
-  pubDate: string;
-  pubDateTZ: string;
-  sentiment: string;
-  sentiment_stats?: string;
-  source_icon: string;
-  source_id: string;
-  source_name: string;
-  source_priority: number;
-  source_url: string;
-  title: string;
-  video_url?: string | null;
+    ai_org?: string;
+    ai_region?: string;
+    ai_tag?: string;
+    article_id: string;
+    category: string[];
+    content?: string;
+    country: string[];
+    creator?: string | null;
+    description: string;
+    duplicate: boolean;
+    image_url?: string;
+    keywords: string[];
+    language: string;
+    link: string;
+    pubDate: string;
+    pubDateTZ: string;
+    sentiment: string;
+    sentiment_stats?: string;
+    source_icon: string;
+    source_id: string;
+    source_name: string;
+    source_priority: number;
+    source_url: string;
+    title: string;
+    video_url?: string | null;
 }
 
 const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallProps[]] | null> => {
@@ -53,21 +53,21 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
         break;
       }
 
-      allNewsData = [...allNewsData, ...newsData];
+            allNewsData = [...allNewsData, ...newsData];
 
-      nextPage = response.data.nextPage;
-      if (!nextPage) break;
+            nextPage = response.data.nextPage;
+            if (!nextPage) break;
 
-      currentUrl = `${url}&page=${nextPage}`;
-    }
+            currentUrl = `${url}&page=${nextPage}`;
+        }
 
     if (allNewsData.length === 0) {
       console.log("No valid news data available.");
       return null;
     }
 
-    const randomIndex = Math.floor(Math.random() * allNewsData.length);
-    const bigNewsItem = allNewsData[randomIndex];
+        const randomIndex = Math.floor(Math.random() * allNewsData.length);
+        const bigNewsItem = allNewsData[randomIndex];
 
     const selectedBigNews: NewsCardBigProps = {
       title: bigNewsItem.title,

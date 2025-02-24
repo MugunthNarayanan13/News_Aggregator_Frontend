@@ -55,6 +55,7 @@ export default function HomePage() {
     }
   };
 
+  // Fetch news when component mounts or category changes
   useEffect(() => {
     let lastScrollY = window.scrollY;
     const handleScroll = () => {
@@ -62,9 +63,10 @@ export default function HomePage() {
       setIsBottomDivExpanded(currentScrollY < lastScrollY);
       lastScrollY = currentScrollY;
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [selectedCategory]);
 
   return (
     <Main>
