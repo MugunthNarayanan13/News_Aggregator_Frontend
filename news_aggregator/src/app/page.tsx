@@ -6,11 +6,14 @@ import { Button } from "@heroui/react";
 import Main from "@/components/Main";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
-import { fetchNews } from "@/utils/fetchModule";
+import { fetchNews, fetchNewsOnlyBig } from "@/utils/fetchModule";
 import { addCategoryWiseURL, addLanguageWiseURL, baseURL } from "@/utils/urls";
+import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchResult, setSearchResult] = useState(null);
   const [searchText, setSearchText] = useState<string>("");
 
   // Refs for each section
@@ -40,6 +43,16 @@ export default function HomePage() {
 
   const onSearchSubmit = async () => {
     console.log("Hello ", searchText);
+    setIsModalOpen(true);
+
+    const newsData = await fetchNewsOnlyBig(
+      addKeyWordSearchURL(addLanguageWiseURL(baseURL, ["en", "hi"]), searchText)
+    );
+    if (!newsData) {
+      console.log("No news data for search result");
+    } else {
+      setSearchResult(newsData);
+    }
   };
 
   useEffect(() => {
@@ -55,12 +68,21 @@ export default function HomePage() {
 
   return (
     <Main>
+      <div></div>
+      <NewsSectionSearch
+        sectionTitle={searchText}
+        news={searchResult}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+
       <NavBar
         searchText={searchText}
         setSearchText={setSearchText}
         onSearchSubmit={onSearchSubmit}
         onCategorySelect={scrollToSection} // Pass scrolling function to NavBar
       />
+
       <div className="flex flex-col mx-4 mt-4 p-6 gap-6 dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
         <div ref={sectionRefs.local}>
           <NewsSection sectionTitle="Local News" categoryUrl={localNewsUrl} />
