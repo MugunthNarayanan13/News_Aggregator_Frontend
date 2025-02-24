@@ -42,6 +42,7 @@ const SingleSelectDropdownPublishers: React.FC<SingleSelectDropdownPublishersPro
 
   return (
     <Select
+    className="flex-1"
       options={publishers.map((publisher) => ({ label: publisher.name, value: publisher.name }))}
       value={selectedOption}
       onChange={handleChange}
