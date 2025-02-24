@@ -7,13 +7,19 @@ import Main from "@/components/Main";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
 import { fetchNews, fetchNewsOnlyBig } from "@/utils/fetchModule";
-import { addCategoryWiseURL, addLanguageWiseURL, baseURL } from "@/utils/urls";
+import {
+  addCategoryWiseURL,
+  addLanguageWiseURL,
+  addKeyWordSearchURL,
+  baseURL,
+} from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
+import { NewsCardBigProps } from "@/components/NewsCardBig";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchResult, setSearchResult] = useState(null);
+  const [searchResult, setSearchResult] = useState<NewsCardBigProps[]>([]);
   const [searchText, setSearchText] = useState<string>("");
 
   // Refs for each section
@@ -28,13 +34,33 @@ export default function HomePage() {
   };
 
   // State for each category URL
-  const [localNewsUrl, setLocalNewsUrl] = useState(() => addLanguageWiseURL(baseURL, ["en", "hi"]));
-  const [worldNewsUrl, setWorldNewsUrl] = useState(() => addLanguageWiseURL(addCategoryWiseURL(baseURL, ["world"]), ["en", "hi"]));
-  const [politicsNewsUrl, setPoliticsNewsUrl] = useState(() => addLanguageWiseURL(addCategoryWiseURL(baseURL, ["politics"]), ["en", "hi"]));
-  const [technologyNewsUrl, setTechnologyNewsUrl] = useState(() => addLanguageWiseURL(addCategoryWiseURL(baseURL, ["technology"]), ["en", "hi"]));
-  const [businessNewsUrl, setBusinessNewsUrl] = useState(() => addLanguageWiseURL(addCategoryWiseURL(baseURL, ["business"]), ["en", "hi"]));
-  const [sportsNewsUrl, setSportsNewsUrl] = useState(() => addLanguageWiseURL(addCategoryWiseURL(baseURL, ["sports"]), ["en", "hi"]));
-  const [entertainmentNewsUrl, setEntertainmentNewsUrl] = useState(() => addLanguageWiseURL(addCategoryWiseURL(baseURL, ["entertainment"]), ["en", "hi"]));
+  const [localNewsUrl, setLocalNewsUrl] = useState(() =>
+    addLanguageWiseURL(baseURL, ["en", "hi"])
+  );
+  const [worldNewsUrl, setWorldNewsUrl] = useState(() =>
+    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["world"]), ["en", "hi"])
+  );
+  const [politicsNewsUrl, setPoliticsNewsUrl] = useState(() =>
+    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["politics"]), ["en", "hi"])
+  );
+  const [technologyNewsUrl, setTechnologyNewsUrl] = useState(() =>
+    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["technology"]), [
+      "en",
+      "hi",
+    ])
+  );
+  const [businessNewsUrl, setBusinessNewsUrl] = useState(() =>
+    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["business"]), ["en", "hi"])
+  );
+  const [sportsNewsUrl, setSportsNewsUrl] = useState(() =>
+    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["sports"]), ["en", "hi"])
+  );
+  const [entertainmentNewsUrl, setEntertainmentNewsUrl] = useState(() =>
+    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["entertainment"]), [
+      "en",
+      "hi",
+    ])
+  );
 
   // Function to scroll to the selected section
   const scrollToSection = (section: keyof typeof sectionRefs) => {
@@ -66,7 +92,7 @@ export default function HomePage() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [selectedCategory]);
+  }, []);
 
   return (
     <Main>
@@ -95,15 +121,24 @@ export default function HomePage() {
         </div>
 
         <div ref={sectionRefs.politics}>
-          <NewsSection sectionTitle="Politics News" categoryUrl={politicsNewsUrl} />
+          <NewsSection
+            sectionTitle="Politics News"
+            categoryUrl={politicsNewsUrl}
+          />
         </div>
 
         <div ref={sectionRefs.technology}>
-          <NewsSection sectionTitle="Technology News" categoryUrl={technologyNewsUrl} />
+          <NewsSection
+            sectionTitle="Technology News"
+            categoryUrl={technologyNewsUrl}
+          />
         </div>
 
         <div ref={sectionRefs.business}>
-          <NewsSection sectionTitle="Business News" categoryUrl={businessNewsUrl} />
+          <NewsSection
+            sectionTitle="Business News"
+            categoryUrl={businessNewsUrl}
+          />
         </div>
 
         <div ref={sectionRefs.sports}>
@@ -111,7 +146,10 @@ export default function HomePage() {
         </div>
 
         <div ref={sectionRefs.entertainment}>
-          <NewsSection sectionTitle="Entertainment News" categoryUrl={entertainmentNewsUrl} />
+          <NewsSection
+            sectionTitle="Entertainment News"
+            categoryUrl={entertainmentNewsUrl}
+          />
         </div>
       </div>
     </Main>

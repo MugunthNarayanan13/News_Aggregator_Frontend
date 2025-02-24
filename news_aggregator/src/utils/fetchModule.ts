@@ -101,7 +101,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
   }
 };
 
-const fetchNewsOnlyBig = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallProps[]] | null> => {
+const fetchNewsOnlyBig = async (url: string): Promise<NewsCardBigProps[] | null> => {
   try {
     console.log("Fetching news from URL:", url); 
 
