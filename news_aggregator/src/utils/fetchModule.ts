@@ -76,7 +76,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
         let nextPage: string | null = null;
         let currentUrl = url;
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             console.log("API Request Attempt:", i + 1, "URL:", currentUrl);
 
             const response = await axios.get(currentUrl);
@@ -161,7 +161,7 @@ const fetchNewsOnlyBig = async (url: string): Promise<NewsCardBigProps[] | null>
         let nextPage: string | null = null;
         let currentUrl = url;
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 2; i++) {
             console.log("API Request Attempt:", i + 1, "URL:", currentUrl);
 
             const response = await axios.get(currentUrl);
