@@ -48,9 +48,8 @@ export default function NewsCardSmall({
 }: NewsCardSmallProps) {
   return (
     <div className={className}>
-      <div className="flex flex-col font-roboto bg-background_light rounded-[10px] h-[160px] w-full justify-between">
-        {/* Content section with auto height */}
-        <div className="flex flex-col p-3">
+      <div className="flex flex-col font-roboto bg-background_light rounded-[500px] h-[200px] w-full justify-between">
+        <div className="flex flex-col  p-3">
           <div className="line-clamp-3 font-normal text-xs md:text-sm lg:text-base mb-2">
             {truncateText(title, 100)}
           </div>
