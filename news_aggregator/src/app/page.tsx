@@ -7,6 +7,7 @@ import Main from "@/components/Main";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
 import { fetchNews, fetchNewsOnlyBig } from "@/utils/fetchModule";
+import SpeechToText from "@/components/voice";
 import {
   addCategoryWiseURL,
   addLanguageWiseURL,
@@ -103,7 +104,6 @@ export default function HomePage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-
       <NavBar
         searchText={searchText}
         setSearchText={setSearchText}
