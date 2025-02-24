@@ -48,7 +48,7 @@ export default function NewsCardSmall({
 }: NewsCardSmallProps) {
   return (
     <div className={className}>
-      <div className="flex flex-col font-roboto bg-background_light rounded-[500px] h-[200px] w-full justify-between">
+      <div className="flex flex-col font-roboto bg-background_light rounded-[15px] h-[175px] w-full justify-between">
         <div className="flex flex-col  p-3">
           <div className="line-clamp-3 font-normal text-xs md:text-sm lg:text-base mb-2">
             {truncateText(title, 100)}
@@ -59,7 +59,7 @@ export default function NewsCardSmall({
         </div>
 
         {/* Footer section aligned to bottom */}
-        <div className="flex flex-row items-center border-none border-black bg-secondary py-3 rounded-b-[15px] sm:h-[25px] md:h-[30px] lg:h-[35px]">
+        <div className="flex flex-row items-center border-none border-black bg-secondary py-3 rounded-b-[10px] sm:h-[25px] md:h-[30px] lg:h-[35px]">
           <img
             src={pubLogo || "https://i.bytvi.com/domain_icons/straitstimes.png"}
             alt={pubName}
