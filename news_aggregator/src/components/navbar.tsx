@@ -21,6 +21,8 @@ interface NavBarProps {
       | "sports"
       | "entertainment"
   ) => void; // Function for scrolling
+  setTimeframe: React.Dispatch<React.SetStateAction<string>>;
+  timeframe: string;
 }
 
 export default function NavBar({
@@ -29,9 +31,9 @@ export default function NavBar({
   onSearchSubmit,
   onCategorySelect,
   onPubSelect,
+  setTimeframe,
+  timeframe,
 }: NavBarProps) {
-  const [timeframe, setTimeframe] = useState<string>("");
-
   const handleTimeframeChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {

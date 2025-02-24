@@ -14,6 +14,7 @@ import {
   addKeyWordSearchURL,
   addPublisherWiseURL,
   baseURL,
+  addTimeframeURL,
 } from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 import { NewsCardBigProps } from "@/components/NewsCardBig";
@@ -25,6 +26,7 @@ export default function HomePage() {
   const [publisher, setpublisher] = useState<string | null>(null);
   const [searchResult, setSearchResult] = useState<NewsCardBigProps[]>([]);
   const [searchText, setSearchText] = useState<string>("");
+  const [timeframe, setTimeframe] = useState<string>("");
 
   // Refs for each section
   const sectionRefs = {
@@ -116,6 +118,19 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    console.log("timeframe", timeframe);
+    if (timeframe != "") {
+      setLocalNewsUrl(addTimeframeURL(localNewsUrl, timeframe));
+      setWorldNewsUrl(addTimeframeURL(worldNewsUrl, timeframe));
+    } else {
+      setLocalNewsUrl(addLanguageWiseURL(baseURL, ["en", "hi"]));
+      setWorldNewsUrl(
+        addLanguageWiseURL(addCategoryWiseURL(baseURL, ["world"]), ["en", "hi"])
+      );
+    }
+  }, [timeframe]);
+
   return (
     <Main>
       <div></div>
@@ -145,6 +160,8 @@ export default function HomePage() {
         searchText={searchText}
         setSearchText={setSearchText}
         onSearchSubmit={onSearchSubmit}
+        setTimeframe={setTimeframe}
+        timeframe={timeframe}
         onPubSelect={onPubSelect}
         onCategorySelect={scrollToSection} // Pass scrolling function to NavBar
       />
