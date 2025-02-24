@@ -2,6 +2,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Search, Mic, Settings, HelpCircle, UserCircle } from "lucide-react";
+import MultiSelectDropdownPublishers from "./publisherDropDown";
+import { useState } from "react";
 
 interface NavBarProps {
   searchText: string;
@@ -14,6 +16,12 @@ export default function NavBar({
   setSearchText,
   onSearchSubmit,
 }: NavBarProps) {
+  const [publisherList, setPublisherList] = useState<string | null>(null);
+
+  const onPubSelect = (publishers: string | null) => {
+    setPublisherList(publishers);
+    console.log(publishers);
+  };
   return (
     <>
       <div className="bg-background px-6 pb-3 flex justify-between items-center mx-auto mt-2 rounded-3xl">
@@ -63,7 +71,7 @@ export default function NavBar({
         </div>
       </div>
 
-      <div className="bg-foreground_light py-3 rounded-3xl w-fit px-5 mx-auto mt-2">
+      <div className="bg-foreground_light py-3 rounded-3xl w-fit px-5 mx-auto mt-2 flex flex-col gap-2">
         <div className="container mx-auto flex justify-center gap-6 text-sm">
           <Link href="#" className="text-black hover:text-black">
             World
@@ -84,6 +92,7 @@ export default function NavBar({
             Entertainment
           </Link>
         </div>
+        <MultiSelectDropdownPublishers onSelect={onPubSelect} />
       </div>
     </>
   );
