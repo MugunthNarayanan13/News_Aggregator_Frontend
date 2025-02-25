@@ -7,7 +7,16 @@ import Main from "@/components/Main";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
 import { fetchNews, fetchNewsOnlyBig } from "@/utils/fetchModule";
-import { addCategoryWiseURL, addLanguageWiseURL, baseURL } from "@/utils/urls";
+import SpeechToText from "@/components/voice";
+import {
+  addCategoryWiseURL,
+  addLanguageWiseURL,
+  addKeyWordSearchURL,
+  addPublisherWiseURL,
+  baseURL,
+  addTimeframeURL,
+  addExcludeKeyWordURL,
+} from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 import { NewsCardBigProps } from "@/components/NewsCardBig";
 import getLocationData from "@/utils/locationRequest";
@@ -131,7 +140,20 @@ export default function HomePage() {
     fetchLocation();
 
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [selectedCategory]);
+  }, []);
+
+  useEffect(() => {
+    console.log("timeframe", timeframe);
+    if (timeframe != "") {
+      setLocalNewsUrl(addTimeframeURL(localNewsUrl, timeframe));
+      setWorldNewsUrl(addTimeframeURL(worldNewsUrl, timeframe));
+    } else {
+      setLocalNewsUrl(addLanguageWiseURL(baseURL, ["en", "hi"]));
+      setWorldNewsUrl(
+        addLanguageWiseURL(addCategoryWiseURL(baseURL, ["world"]), ["en", "hi"])
+      );
+    }
+  }, [timeframe]);
 
   return (
     <Main>
