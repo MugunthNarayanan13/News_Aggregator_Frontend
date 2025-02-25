@@ -9,6 +9,8 @@ import SpeechToText from "@/components/voice";
 interface NavBarProps {
   searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  excludeText: string;
+  setExcludeText: React.Dispatch<React.SetStateAction<string>>;
   onSearchSubmit: () => void;
   onPubSelect: (publishers: string | null) => void;
   onCategorySelect: (
@@ -20,7 +22,7 @@ interface NavBarProps {
       | "business"
       | "sports"
       | "entertainment"
-  ) => void; // Function for scrolling
+  ) => void;
   setTimeframe: React.Dispatch<React.SetStateAction<string>>;
   timeframe: string;
 }
@@ -28,6 +30,8 @@ interface NavBarProps {
 export default function NavBar({
   searchText,
   setSearchText,
+  excludeText,
+  setExcludeText,
   onSearchSubmit,
   onCategorySelect,
   onPubSelect,
@@ -44,7 +48,6 @@ export default function NavBar({
   return (
     <>
       <div className="bg-background px-6 pb-3 flex justify-between items-center mx-auto mt-2 rounded-3xl">
-        {/* Left Side - Logo & Links */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <span className="text-[30px] text-black mb-3">News </span>
@@ -53,27 +56,32 @@ export default function NavBar({
         </div>
 
         <div className="flex-1 flex items-center gap-6 -ml-10">
-          {/* Search Bar */}
-          <div className="hidden sm:flex mx-auto items-center gap-1 bg-white rounded-[20px] px-4 py-2 w-[20%] sm:w-[30rem] justify-end border-2 border-foreground_light">
+          <div className="hidden sm:flex mx-auto items-center gap-2 bg-white rounded-[20px] px-4 py-2 w-[90%] sm:w-[35rem] justify-between border-2 border-foreground_light">
             <Search size={18} className="text-black" />
             <input
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search for topics, locations"
-              className="ml-2 w-full bg-transparent text-black placeholder-black border-none outline-none focus:ring-0"
+              className="ml-2 w-full bg-transparent text-black placeholder-gray-600 border-none outline-none focus:ring-0"
+            />
+            <input
+              type="text"
+              value={excludeText}
+              onChange={(e) => setExcludeText(e.target.value)}
+              placeholder="Exclude keywords"
+              className="ml-2 w-1/4 bg-gray-200 text-black placeholder-gray-600 border-none outline-none focus:ring-2 focus:ring-gray-400 rounded-md px-2 py-1"
             />
             {searchText.length > 0 ? (
               <button
                 onClick={onSearchSubmit}
-                className="px-3 py-1 text-black text-sm rounded-lg bg-foreground_light"
+                className="px-3 py-1 text-white text-sm rounded-lg bg-secondary"
               >
                 Search
               </button>
             ) : (
               ""
             )}
-            {/* Voice Input Button */}
             <SpeechToText setSearchText={setSearchText} />
           </div>
         </div>
@@ -131,11 +139,8 @@ export default function NavBar({
           </button>
         </div>
 
-        {/* Publisher Dropdown & Timeframe Selection */}
         <div className="flex gap-4 items-center justify-center">
           <MultiSelectDropdownPublishers onSelect={onPubSelect} />
-
-          {/* Timeframe Dropdown */}
           <select
             value={timeframe}
             onChange={handleTimeframeChange}

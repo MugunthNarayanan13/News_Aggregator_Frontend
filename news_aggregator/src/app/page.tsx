@@ -27,6 +27,7 @@ export default function HomePage() {
   const [searchResult, setSearchResult] = useState<NewsCardBigProps[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [timeframe, setTimeframe] = useState<string>("");
+  const [excludeText, setExcludeText]=useState<string>("");
 
   // Refs for each section
   const sectionRefs = {
@@ -158,6 +159,8 @@ export default function HomePage() {
       />
       <NavBar
         searchText={searchText}
+        excludeText={excludeText}
+        setExcludeText={setExcludeText}
         setSearchText={setSearchText}
         onSearchSubmit={onSearchSubmit}
         setTimeframe={setTimeframe}
