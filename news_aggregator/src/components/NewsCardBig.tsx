@@ -35,6 +35,12 @@ const shareNews = async (url: string) => {
   }
 };
 
+const handleNewsClick = (link: string) => {
+  if (link) {
+    window.location.href = link;
+  }
+};
+
 export default function NewsCardBig({
   title,
   desc,
@@ -49,7 +55,10 @@ export default function NewsCardBig({
   return (
     <div>
       <div className="flex flex-col font-roboto sm:w-[250px] md:w-[280px] lg:w-[320px] sm:h-[280px] md:h-[320px] lg:h-[360px] border-2 border-none bg-background_light rounded-[15px] mb-0">
-        <div className="bg-secondary flex-1 m-2 rounded-lg overflow-hidden">
+        <div
+          className="bg-secondary flex-1 m-2 rounded-lg overflow-hidden cursor-pointer"
+          onClick={() => handleNewsClick(link)}
+        >
           {imgUrl ? (
             <img
               src={imgUrl}
@@ -86,8 +95,8 @@ export default function NewsCardBig({
             {pubName}
           </div>
 
-           {/* Share Button */}
-           <button
+          {/* Share Button */}
+          <button
             onClick={() => shareNews(link)}
             className="px-4 text-white hover:opacity-80 transition"
           >

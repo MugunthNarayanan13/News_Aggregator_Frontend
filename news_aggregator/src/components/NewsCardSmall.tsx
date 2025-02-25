@@ -35,6 +35,12 @@ const shareNews = async (url: string) => {
   }
 };
 
+const handleNewsClick = (link: string) => {
+  if (link) {
+    window.location.href = link;
+  }
+};
+
 export default function NewsCardSmall({
   title,
   desc,
@@ -44,12 +50,15 @@ export default function NewsCardSmall({
   sentiment,
   pubDateTZ,
   className = "",
-  link, 
+  link,
 }: NewsCardSmallProps) {
   return (
     <div className={className}>
-      <div className="flex flex-col font-roboto bg-background_light rounded-[15px] h-[175px] w-full justify-between">
-        <div className="flex flex-col  p-3">
+      <div className="flex flex-col font-roboto bg-background_light rounded-[15px] h-[175px] w-full justify-between cursor-pointer">
+        <div
+          className="flex flex-col  p-3"
+          onClick={() => handleNewsClick(link)}
+        >
           <div className="line-clamp-3 font-normal text-xs md:text-sm lg:text-base mb-2">
             {truncateText(title, 100)}
           </div>
@@ -68,7 +77,7 @@ export default function NewsCardSmall({
           <div className="flex-1 text-white text-xs md:text-sm lg:text-base ml-3">
             {pubName}
           </div>
-          
+
           {/* Share Button */}
           <button
             onClick={() => shareNews(link)}

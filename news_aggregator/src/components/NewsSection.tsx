@@ -95,11 +95,11 @@ export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
     <div className="flex flex-col font-roboto bg-foreground_light rounded-[30px] p-4 pb-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-light">{sectionTitle}</h2>
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 z-40">
           <button
             onClick={() => setPageIndex(prev => Math.max(prev - 1, 0))}
             disabled={pageIndex === 0}
-            className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2 rounded-full hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed "
           >
             <ChevronLeftIcon className="w-4 h-4" />
           </button>
