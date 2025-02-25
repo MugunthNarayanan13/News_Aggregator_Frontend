@@ -18,6 +18,14 @@ const addCountryWiseURL = (url: string, countries: string[]) =>{
   return url.slice(0,url.length);
 }
 
+const addExcludeKeyWordURL = (url: string, keyword: string) =>{
+  return url+`&excludecategory=${keyword}`;
+}
+
+const addLocationURL = (url: string, keyword: string) =>{
+  return url+`&excludecategory="${keyword}"`;
+}
+
 const addCategoryWiseURL = (url: string, categories: string[]) =>{
   url = url+`&category=`;
   categories.forEach((category)=>{
@@ -33,6 +41,11 @@ const addLanguageWiseURL = (url: string, langs: string[]) =>{
     url = url + `${lang},`;
   })
   return url.slice(0,url.length);
+}
+
+const addTimeframeURL = (url: string, timeframe: string) => {
+  url = url+"&timeframe="+timeframe;
+  return url;
 }
 
 const addPublisherWiseURL = (url: string, domains: string[]) =>{
@@ -79,5 +92,7 @@ export {
   addLanguageWiseURL,
   addPublisherWiseURL,
   addRegionWiseURL,
-  allPublishersURL
+  allPublishersURL,
+  addTimeframeURL,
+  addExcludeKeyWordURL
 }
