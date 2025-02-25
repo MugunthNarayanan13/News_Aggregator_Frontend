@@ -7,7 +7,7 @@ import Main from "@/components/Main";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
 import { fetchNews, fetchNewsOnlyBig } from "@/utils/fetchModule";
-import { addCategoryWiseURL, addLanguageWiseURL, baseURL } from "@/utils/urls";
+import { addCategoryWiseURL, addKeyWordSearchURL, addLanguageWiseURL, baseURL } from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 
 export default function HomePage() {
@@ -66,7 +66,7 @@ export default function HomePage() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [selectedCategory]);
+  }, []);
 
   return (
     <Main>
