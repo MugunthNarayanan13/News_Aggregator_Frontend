@@ -15,6 +15,7 @@ import {
   addPublisherWiseURL,
   baseURL,
   addTimeframeURL,
+  addExcludeKeyWordURL,
 } from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 import { NewsCardBigProps } from "@/components/NewsCardBig";
@@ -28,6 +29,7 @@ export default function HomePage() {
   const [searchResult, setSearchResult] = useState<NewsCardBigProps[]>([]);
   const [searchText, setSearchText] = useState<string>("");
   const [timeframe, setTimeframe] = useState<string>("");
+  const [excludeText, setExcludeText] = useState<string>("");
 
   // Refs for each section
   const sectionRefs = {
@@ -76,11 +78,17 @@ export default function HomePage() {
   const [location, setLocation] = useState<{ country: string; region: string } | null>(null);
 
   const onSearchSubmit = async () => {
-    console.log("Hello ", searchText);
+    console.log("Hello ", searchText, excludeText);
     setIsSearchModalOpen(true);
 
     const newsData = await fetchNewsOnlyBig(
-      addKeyWordSearchURL(addLanguageWiseURL(baseURL, ["en", "hi"]), searchText)
+      addExcludeKeyWordURL(
+        addKeyWordSearchURL(
+          addLanguageWiseURL(baseURL, ["en", "hi"]),
+          searchText
+        ),
+        excludeText
+      )
     );
     if (!newsData) {
       console.log("No news data for search result");
@@ -174,6 +182,8 @@ export default function HomePage() {
       />
       <NavBar
         searchText={searchText}
+        excludeText={excludeText}
+        setExcludeText={setExcludeText}
         setSearchText={setSearchText}
         onSearchSubmit={onSearchSubmit}
         setTimeframe={setTimeframe}

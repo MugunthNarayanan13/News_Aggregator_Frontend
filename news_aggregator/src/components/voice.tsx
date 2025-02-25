@@ -11,7 +11,8 @@ const SpeechToText = ({ setSearchText }: SpeechToTextProps) => {
 
   const startListening = () => {
     const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       alert("Your browser does not support speech recognition.");
@@ -49,7 +50,7 @@ const SpeechToText = ({ setSearchText }: SpeechToTextProps) => {
     <button
       onClick={startListening}
       className={`px-3 py-1 text-black text-sm rounded-lg bg-foreground_light ${
-        isRecording ? "bg-red-500" : "bg-blue-500"
+        isRecording ? "bg-red-400" : "bg-foreground_light"
       }`}
     >
       <Mic size={18} className="text-black cursor-pointer" />
