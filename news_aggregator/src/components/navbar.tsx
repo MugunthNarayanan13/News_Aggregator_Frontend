@@ -169,7 +169,7 @@ export default function NavBar({
           <select
             value={timeframe}
             onChange={handleTimeframeChange}
-            className="bg-white text-black px-3 py-2 rounded-md border border-gray-300 focus:outline-none"
+            className="bg-white text-gray-500 px-3 py-2 rounded-[30px] border border-foreground_light focus:outline-none"
           >
             <option value="">Select Timeframe</option>
             <optgroup label="Hours">
