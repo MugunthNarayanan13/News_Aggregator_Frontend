@@ -18,6 +18,7 @@ import {
 } from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 import { NewsCardBigProps } from "@/components/NewsCardBig";
+import getLocationData from "@/utils/locationRequest";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
@@ -72,6 +73,7 @@ export default function HomePage() {
   const scrollToSection = (section: keyof typeof sectionRefs) => {
     sectionRefs[section]?.current?.scrollIntoView({ behavior: "smooth" });
   };
+  const [location, setLocation] = useState<{ country: string; region: string } | null>(null);
 
   const onSearchSubmit = async () => {
     console.log("Hello ", searchText);
@@ -115,6 +117,20 @@ export default function HomePage() {
     };
 
     window.addEventListener("scroll", handleScroll);
+
+    const fetchLocation = async () => {
+      try {
+        const locationData = await getLocationData();
+        if (locationData) {
+          setLocation(locationData);
+        }
+      } catch (err) {
+        console.log("Unable to fetch location. You may have denied the location permission.");
+      }
+    };
+
+    fetchLocation();
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 

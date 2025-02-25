@@ -70,7 +70,7 @@ export default function NewsCardSmall({
         {/* Footer section aligned to bottom */}
         <div className="flex flex-row items-center border-none border-black bg-secondary py-3 rounded-b-[10px] sm:h-[25px] md:h-[30px] lg:h-[35px]">
           <img
-            src={pubLogo || "https://i.bytvi.com/domain_icons/straitstimes.png"}
+            src={pubLogo}
             alt={pubName}
             className="w-[15px] h-[15px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] rounded-full object-cover ml-3"
           />

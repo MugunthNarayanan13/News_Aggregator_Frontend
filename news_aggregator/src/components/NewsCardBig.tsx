@@ -87,6 +87,9 @@ export default function NewsCardBig({
             src={pubLogo || "https://via.placeholder.com/20"} // Default logo if missing
             alt={pubName}
             className="w-[15px] h-[15px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] rounded-full object-cover ml-3"
+            onError={(e) => {
+                e.currentTarget.src = "../public/fallback_logo.png";
+            }}
           />
           <div className="flex-1 text-white text-xs md:text-sm lg:text-base ml-3">
             {pubName}
