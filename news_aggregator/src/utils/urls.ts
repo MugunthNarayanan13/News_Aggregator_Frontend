@@ -18,6 +18,14 @@ const addCountryWiseURL = (url: string, countries: string[]) =>{
   return url.slice(0,url.length);
 }
 
+const addExcludeKeyWordURL = (url: string, keyword: string) =>{
+  return url+`&excludecategory=${keyword}`;
+}
+
+const addLocationURL = (url: string, keyword: string) =>{
+  return url+`&excludecategory="${keyword}"`;
+}
+
 const addCategoryWiseURL = (url: string, categories: string[]) =>{
   url = url+`&category=`;
   categories.forEach((category)=>{
@@ -85,5 +93,6 @@ export {
   addPublisherWiseURL,
   addRegionWiseURL,
   allPublishersURL,
-  addTimeframeURL
+  addTimeframeURL,
+  addExcludeKeyWordURL
 }
