@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
-
+import LoginForm from '@/components/LoginForm'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('');
