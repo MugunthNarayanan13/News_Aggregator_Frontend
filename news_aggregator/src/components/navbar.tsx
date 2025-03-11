@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 import { Search, Mic, Settings, HelpCircle, UserCircle } from "lucide-react";
@@ -6,6 +8,8 @@ import MultiSelectDropdownPublishers from "./publisherDropDown";
 import { useState } from "react";
 import SpeechToText from "@/components/voice";
 import Select from "react-select";
+import { useRouter } from "next/navigation";
+
 
 interface NavBarProps {
   searchText: string;
@@ -27,6 +31,8 @@ interface NavBarProps {
   setTimeframe: React.Dispatch<React.SetStateAction<string>>;
   timeframe: string;
 }
+
+
 
 const excludeOptions = [
   { value: "business", label: "Business" },
@@ -66,6 +72,7 @@ export default function NavBar({
     console.log("Selected timeframe:", event.target.value);
   };
 
+  const router = useRouter();
   return (
     <>
       <div className="bg-background px-6 pb-3 flex justify-between items-center mx-auto mt-2 rounded-3xl">
@@ -116,8 +123,8 @@ export default function NavBar({
           <button>
             <Settings size={22} className="text-black hover:text-black" />
           </button>
-          <button>
-            <UserCircle size={22} className="text-black hover:text-black" />
+          <button onClick={() => router.push("/profile")}>
+            <Image src="https://avatar.iran.liara.run/public/boy?username=[value]" alt="alt" width={22} height={22} />
           </button>
         </div>
       </div>
@@ -166,23 +173,7 @@ export default function NavBar({
         <div className="flex gap-4 items-center justify-center mt-2">
           <MultiSelectDropdownPublishers onSelect={onPubSelect} />
 
-          <select
-            value={timeframe}
-            onChange={handleTimeframeChange}
-            className="bg-white text-gray-500 px-3 py-2 rounded-[30px] border border-foreground_light focus:outline-none"
-          >
-            <option value="">Select Timeframe</option>
-            <optgroup label="Hours">
-              <option value="1">Last 1 Hour</option>
-              <option value="6">Last 6 Hours</option>
-              <option value="24">Last 24 Hours</option>
-            </optgroup>
-            <optgroup label="Minutes">
-              <option value="15m">Last 15 Minutes</option>
-              <option value="45m">Last 45 Minutes</option>
-              <option value="90m">Last 90 Minutes</option>
-            </optgroup>
-          </select>
+          
         </div>
       </div>
     </>
