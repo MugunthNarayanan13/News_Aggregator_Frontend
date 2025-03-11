@@ -165,24 +165,6 @@ export default function NavBar({
         {/* Publisher & Timeframe Selection */}
         <div className="flex gap-4 items-center justify-center mt-2">
           <MultiSelectDropdownPublishers onSelect={onPubSelect} />
-
-          <select
-            value={timeframe}
-            onChange={handleTimeframeChange}
-            className="bg-white text-gray-500 px-3 py-2 rounded-[30px] border border-foreground_light focus:outline-none"
-          >
-            <option value="">Select Timeframe</option>
-            <optgroup label="Hours">
-              <option value="1">Last 1 Hour</option>
-              <option value="6">Last 6 Hours</option>
-              <option value="24">Last 24 Hours</option>
-            </optgroup>
-            <optgroup label="Minutes">
-              <option value="15m">Last 15 Minutes</option>
-              <option value="45m">Last 45 Minutes</option>
-              <option value="90m">Last 90 Minutes</option>
-            </optgroup>
-          </select>
         </div>
       </div>
     </>
