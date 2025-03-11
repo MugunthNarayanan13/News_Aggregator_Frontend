@@ -33,8 +33,10 @@ export default function LoginPage() {
     console.log("Logging in with:", email, password, data);
     setError("");
 
-    // Redirect to /home after successful login
-    // router.push("/home");
+    // Redirect to /home after successful 
+    if(data.message == "Login successful") {
+      router.push("/home");
+    }
   };
 
   return (

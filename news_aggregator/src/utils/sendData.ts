@@ -25,8 +25,13 @@ const sendData = async function(url: string, method: "GET" | "POST" | "PUT" | "D
         throw new Error("Invalid method");
     }
 
-    console.log("hello", response.data);
-    if(response.status == 400){
+    if(response.status == 200) {
+      toast.success("Successful");
+    } else if(response.status == 400){
+      toast.error(response.data);
+    } else if (response.status == 500) {
+      toast.error("Internal server error");
+    } else {
       toast.error(response.data);
     }
     return response.data;
