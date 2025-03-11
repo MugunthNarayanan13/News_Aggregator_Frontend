@@ -169,11 +169,9 @@ export default function NavBar({
           </button>
         </div>
 
-        {/* Publisher & Timeframe Selection */}
+        {/* Publisher */}
         <div className="flex gap-4 items-center justify-center mt-2">
           <MultiSelectDropdownPublishers onSelect={onPubSelect} />
-
-          
         </div>
       </div>
     </>
