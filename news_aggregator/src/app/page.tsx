@@ -1,29 +1,42 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { Eye, EyeOff } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { sendData } from "@/utils/sendData";
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const sqlInjectionPattern =
+      /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|OR|AND|EXEC|--|#|;)\b|['"=])/i;
+
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setError("Please fill in all fields");
       return;
     }
 
-    // Simulate login success
-    console.log('Logging in with:', email, password);
-    setError('');
+    if (sqlInjectionPattern.test(email) || sqlInjectionPattern.test(password)) {
+      setError("Invalid input detected");
+      return;
+    }
 
-    // Redirect to /home after successful login
-    router.push('/home');
+    const data = await sendData("/login", "POST", { email, password });
+
+    // Simulate login success
+    console.log("Logging in with:", email, password, data);
+    setError("");
+
+    // Redirect to /home after successful 
+    if(data.message == "Login successful") {
+      router.push("/home");
+    }
   };
 
   const handleGuestLogin = () => {
@@ -34,7 +47,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#cdd7f0] dark:bg-background_dark">
       <form
-        onSubmit={handleLogin}
+        onSubmit={(e) => handleLogin(e)}
         className="w-full max-w-sm p-8 bg-white dark:bg-foreground_dark rounded-2xl shadow-xl space-y-6 border border-[#cdd7f0]"
       >
         <h2 className="text-2xl font-semibold text-center text-black dark:text-white">
@@ -43,7 +56,9 @@ export default function LoginPage() {
         {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
         <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">Email</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Email
+          </label>
           <input
             type="email"
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
@@ -55,9 +70,11 @@ export default function LoginPage() {
         </div>
 
         <div className="relative">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Password</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Password
+          </label>
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 pr-10"
             placeholder="••••••••"
             value={password}
@@ -74,7 +91,10 @@ export default function LoginPage() {
         </div>
 
         <div className="flex justify-end">
-          <Link href="/forgot-password" className="text-sm text-[#687EFF] hover:underline">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-[#687EFF] hover:underline"
+          >
             Forgot password?
           </Link>
         </div>
@@ -103,7 +123,7 @@ export default function LoginPage() {
         </button>
 
         <p className="text-center text-sm text-gray-700 mt-2">
-          Don’t have an account?{' '}
+          Don’t have an account?{" "}
           <Link href="/signup" className="text-[#687EFF] hover:underline">
             Sign up
           </Link>
