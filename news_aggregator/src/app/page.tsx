@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
@@ -35,6 +35,8 @@ export default function LoginPage() {
 
     // Redirect to /home after successful 
     if(data.message == "Login successful") {
+      localStorage.setItem("isLoggedIn", "1");
+      localStorage.setItem("email", email);
       router.push("/home");
     }
   };
@@ -42,6 +44,12 @@ export default function LoginPage() {
   const handleGuestLogin = () => {
     router.push('/home');
   };
+
+  useEffect(()=>{ 
+    if(localStorage.getItem("isLoggedIn") == "1"){
+      router.push("/home");
+    }
+  },[])
 
 
   return (
