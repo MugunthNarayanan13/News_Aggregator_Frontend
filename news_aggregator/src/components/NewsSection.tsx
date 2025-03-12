@@ -65,6 +65,7 @@ export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
         }
 
         const [bigNews, smallNews] = newsData;
+        console.log(bigNews, smallNews);
         setNewsState({
           bigNews,
           smallNews,
