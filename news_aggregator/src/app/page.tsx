@@ -27,7 +27,7 @@ export default function LoginPage() {
       return;
     }
 
-    const data = await sendData("/login", "POST", { email, password });
+    const {data} = await sendData("/login", "POST", { email, password });
 
     // Simulate login success
     console.log("Logging in with:", email, password, data);

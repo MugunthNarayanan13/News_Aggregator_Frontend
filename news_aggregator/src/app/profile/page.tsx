@@ -22,27 +22,44 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { sendData } from "@/utils/sendData";
+
+interface userData {
+  name: string;
+  email: string;
+  password: string;
+  avatar: string;
+  locations: string[];
+  sources: string[];
+  languages: string[];
+  EntertainmentArticlesRead: number;
+  SportsArticlesRead: number;
+  PoliticalArticlesRead: number;
+  BusinessArticlesRead: number;
+  TechnologyArticlesRead: number;
+  GlobalArticlesRead: number;
+}
 
 export default function UserProfile() {
   const router = useRouter();
 
   // Pre-populated user data for UI testing
-  const [user, setUser] = useState({
-    _id: "user123",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    password: "password123",
-    avatar: "", // Will store the avatar URL
-    locations: ["New York", "London", "Tokyo"],
-    sources: ["CNN", "BBC", "The Guardian"],
-    languages: ["English", "Spanish", "French"],
-    EntertainmentArticlesRead: 47,
-    SportsArticlesRead: 32,
-    PoliticalArticlesRead: 65,
-    BusinessArticlesRead: 28,
-    TechnologyArticlesRead: 54,
-    GlobalArticlesRead: 39,
+  const [user, setUser] = useState<userData>({
+    name: "",
+    email: "",
+    password: "",
+    avatar: "",
+    locations: [],
+    sources: [],
+    languages: [],
+    EntertainmentArticlesRead: 0,
+    SportsArticlesRead: 0,
+    PoliticalArticlesRead: 0,
+    BusinessArticlesRead: 0,
+    TechnologyArticlesRead: 0,
+    GlobalArticlesRead: 0,
   });
+  const [userID, setUserID] = useState();
 
   const [isLoading, setIsLoading] = useState(false); // Set to false to skip loading screen
   const [isEditing, setIsEditing] = useState(false);
@@ -83,6 +100,30 @@ export default function UserProfile() {
   useEffect(() => {
     const loggedIn = localStorage.getItem("isLoggedIn");
     if (loggedIn == "0" || !loggedIn) router.replace("/");
+    const fetchUserDetails = async () => {
+      const { data } = await sendData(
+        `/${localStorage.getItem("email")}`,
+        "GET"
+      );
+      console.log("Profile data: ", data);
+      setUser({
+        name: data.name,
+        password: data.password,
+        email: data.email,
+        locations: data.locations,
+        sources: data.sources,
+        languages: data.languages,
+        EntertainmentArticlesRead: data.EntertainmentArticlesRead,
+        SportsArticlesRead: data.SportsArticlesRead,
+        PoliticalArticlesRead: data.PoliticalArticlesRead,
+        BusinessArticlesRead: data.BusinessArticlesRead,
+        TechnologyArticlesRead: data.TechnologyArticlesRead,
+        GlobalArticlesRead: data.GlobalArticlesRead,
+        avatar: data.avatar != null ? data.avatar : "",
+      });
+      setUserID(data._id);
+    };
+    fetchUserDetails();
   }, []);
 
   const handleAvatarUpload = () => {
@@ -107,12 +148,13 @@ export default function UserProfile() {
 
   const handleSaveChanges = async () => {
     try {
-      // Mock API response
-      setTimeout(() => {
-        setUser({ ...user, name: newName });
-        setIsEditing(false);
-        alert("Name updated successfully!");
-      }, 500);
+      setUser({ ...user, name: newName });
+      const { data } = await sendData(`/${userID}/name`, "PUT", {
+        name: newName,
+      });
+      setNewName("");
+      console.log("edited user:", data);
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Error updating profile");
@@ -156,10 +198,9 @@ export default function UserProfile() {
   };
 
   const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("userId");
-    }
-    router.push("/login");
+    localStorage.removeItem("email");
+    localStorage.removeItem("isLoggedIn");
+    router.push("/");
   };
 
   // Preference management functions
