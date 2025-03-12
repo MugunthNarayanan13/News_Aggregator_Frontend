@@ -755,7 +755,7 @@ export default function UserProfile() {
               </div>
               <div className="mt-4 text-center">
                 <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-colors duration-300 shadow-sm hover:shadow flex items-center gap-2 mx-auto">
-                  <BookOpen size={16} /> <Link href="/">Find More Articles</Link>
+                  <BookOpen size={16} /> <Link href="/home">Find More Articles</Link>
                 </button>
               </div>
             </div>
