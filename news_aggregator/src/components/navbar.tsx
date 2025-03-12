@@ -133,6 +133,7 @@ export default function NavBar({
               <button
                 onClick={() => {
                   localStorage.removeItem("email");
+                  localStorage.removeItem("userID");
                   localStorage.removeItem("isLoggedIn");
                   router.replace("/");
                 }}

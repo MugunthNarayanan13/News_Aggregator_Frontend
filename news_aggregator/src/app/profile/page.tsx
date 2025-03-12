@@ -123,6 +123,7 @@ export default function UserProfile() {
         avatar: data.avatar != null ? data.avatar : "",
       });
       setUserID(data._id);
+      localStorage.setItem("userID", data._id);
     };
     fetchUserDetails();
   }, []);
@@ -198,6 +199,7 @@ export default function UserProfile() {
 
   const handleLogout = () => {
     localStorage.removeItem("email");
+    localStorage.removeItem("userID");
     localStorage.removeItem("isLoggedIn");
     router.push("/");
   };
