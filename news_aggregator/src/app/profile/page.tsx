@@ -23,6 +23,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { sendData } from "@/utils/sendData";
+import { toast } from "react-toastify";
 
 interface userData {
   name: string;
@@ -148,12 +149,11 @@ export default function UserProfile() {
 
   const handleSaveChanges = async () => {
     try {
-      setUser({ ...user, name: newName });
-      const { data } = await sendData(`/${userID}/name`, "PUT", {
+      const { data, status } = await sendData(`/${userID}/name`, "PUT", {
         name: newName,
       });
+      if (status == 200) setUser({ ...user, name: newName });
       setNewName("");
-      console.log("edited user:", data);
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -163,18 +163,17 @@ export default function UserProfile() {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords don't match");
+      toast.warn("Passwords don't match");
       return;
     }
-
     try {
-      // Mock API response
-      setTimeout(() => {
-        alert("Password updated successfully");
-        setIsChangingPassword(false);
-        setNewPassword("");
-        setConfirmPassword("");
-      }, 500);
+      const { data, status } = await sendData(`/${userID}/password`, "PUT", {
+        password: newPassword,
+      });
+      if (status == 200) setUser({ ...user, password: newPassword });
+      setIsChangingPassword(false);
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (error) {
       console.error("Error updating password:", error);
       alert("Error updating password");
