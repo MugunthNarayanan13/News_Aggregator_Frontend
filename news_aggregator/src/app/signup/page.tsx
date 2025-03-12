@@ -46,7 +46,7 @@ export default function SignupPage() {
     setError("");
 
     // Redirect to login or home
-    if (data.message == "Signup successful") {
+    if (data && data.message == "Signup successful") {
       router.push("/");
     }
   };
