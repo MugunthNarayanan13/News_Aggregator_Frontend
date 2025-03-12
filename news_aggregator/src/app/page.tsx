@@ -39,6 +39,11 @@ export default function LoginPage() {
     }
   };
 
+  const handleGuestLogin = () => {
+    router.push('/home');
+  };
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#cdd7f0] dark:bg-background_dark">
       <form
@@ -99,6 +104,22 @@ export default function LoginPage() {
           className="w-full bg-[#687EFF] text-white py-2 rounded-lg hover:bg-[#5a6be0] transition duration-200"
         >
           Login
+        </button>
+
+         {/* Divider Line */}
+         <div className="flex items-center justify-center space-x-2">
+          <div className="w-full h-px bg-gray-300"></div>
+          <span className="text-sm text-gray-500">or</span>
+          <div className="w-full h-px bg-gray-300"></div>
+        </div>
+
+        {/* Continue as Guest Button */}
+        <button
+          type="button"
+          onClick={handleGuestLogin}
+          className="w-full border border-[#687EFF] text-[#687EFF] py-2 rounded-lg hover:bg-[#687EFF]/10 transition duration-200"
+        >
+          Continue as Guest
         </button>
 
         <p className="text-center text-sm text-gray-700 mt-2">
