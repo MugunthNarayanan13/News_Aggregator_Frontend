@@ -57,7 +57,7 @@ const addPublisherWiseURL = (url: string, domains: string[]) =>{
 }
 
 const addRegionWiseURL = (url: string, regions: string[]) => {
-  url = url+"&regioin=";
+  url = url+"&region=";
   regions.forEach((region)=>{
     url = url+`${region},`;
   })

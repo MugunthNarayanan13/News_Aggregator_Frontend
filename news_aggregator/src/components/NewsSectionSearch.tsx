@@ -39,7 +39,7 @@ export function NewsSectionSearch({
 
         {/* Section Title */}
         <p className="text-2xl ml-5 mb-6">
-          Search results for "{sectionTitle}"
+          Search results for `{sectionTitle}`
         </p>
 
         {/* News Cards - Responsive Grid Layout */}
