@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,6 @@ import { useState } from "react";
 import SpeechToText from "@/components/voice";
 import Select from "react-select";
 import { useRouter } from "next/navigation";
-
 
 interface NavBarProps {
   searchText: string;
@@ -31,8 +30,6 @@ interface NavBarProps {
   setTimeframe: React.Dispatch<React.SetStateAction<string>>;
   timeframe: string;
 }
-
-
 
 const excludeOptions = [
   { value: "business", label: "Business" },
@@ -123,9 +120,31 @@ export default function NavBar({
           <button>
             <Settings size={22} className="text-black hover:text-black" />
           </button>
-          <button onClick={() => router.push("/profile")}>
-            <Image src="https://avatar.iran.liara.run/public/boy?username=[value]" alt="alt" width={22} height={22} />
-          </button>
+          {localStorage.getItem("isLoggedIn") == "1" ? (
+            <div className="flex flex-row gap-4">
+              <button onClick={() => router.push("/profile")}>
+                <Image
+                  src="https://avatar.iran.liara.run/public/boy?username=[value]"
+                  alt="alt"
+                  width={22}
+                  height={22}
+                />
+              </button>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("email");
+                  localStorage.removeItem("userID");
+                  localStorage.removeItem("isLoggedIn");
+                  router.replace("/");
+                }}
+                className="bg-foreground_light dark:bg-foreground_dark text-black dark:text-white px-2 py-1 rounded-lg text-xs"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => router.push("/")}>Login</button>
+          )}
         </div>
       </div>
       {/* Category Section */}

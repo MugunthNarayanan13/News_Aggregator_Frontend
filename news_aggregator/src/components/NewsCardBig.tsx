@@ -54,11 +54,11 @@ export default function NewsCardBig({
 }: NewsCardBigProps) {
   return (
     <div>
-      <div className="flex flex-col font-roboto sm:w-[250px] md:w-[280px] lg:w-[320px] sm:h-[280px] md:h-[320px] lg:h-[360px] border-2 border-none bg-background_light rounded-[15px] mb-0">
-        <div
-          className="bg-secondary flex-1 m-2 rounded-lg overflow-hidden cursor-pointer"
-          onClick={() => handleNewsClick(link)}
-        >
+      <div
+        className="flex flex-col font-roboto sm:w-[250px] md:w-[280px] lg:w-[320px] sm:h-[280px] md:h-[320px] lg:h-[360px] border-2 border-none bg-background_light rounded-[15px] mb-0  cursor-pointer"
+        onClick={() => handleNewsClick(link)}
+      >
+        <div className="bg-secondary flex-1 m-2 rounded-lg overflow-hidden">
           {imgUrl ? (
             <img
               src={imgUrl}
@@ -87,7 +87,6 @@ export default function NewsCardBig({
             src={pubLogo || "https://via.placeholder.com/20"} // Default logo if missing
             alt={pubName}
             className="w-[15px] h-[15px] md:w-[18px] md:h-[18px] lg:w-[20px] lg:h-[20px] rounded-full object-cover ml-3"
-
           />
           <div className="flex-1 text-white text-xs md:text-sm lg:text-base ml-3">
             {pubName}
