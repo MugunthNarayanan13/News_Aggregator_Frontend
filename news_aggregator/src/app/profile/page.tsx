@@ -1,5 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unescaped-entities */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -94,7 +94,7 @@ export default function UserProfile() {
   useEffect(() => {
     if (user?.name) {
       const encodedUsername = encodeURIComponent(user.name.trim());
-      setAvatarUrl(`https://avatar.iran.liara.run/public/boy?username=[value]`);
+      setAvatarUrl(`https://avatar.iran.liara.run/public`);
     }
   }, [user?.name]);
 
@@ -183,19 +183,18 @@ export default function UserProfile() {
 
   const handleDeleteAccount = async () => {
     try {
-      // Mock API response
-      setTimeout(() => {
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("userId");
-        }
+      const response = await sendData(`/${userID}`, "DELETE");
+      if (response.status === 200) {
+        localStorage.clear();
         alert("Your account has been deleted.");
-        router.push("/login");
-      }, 500);
+        router.push("/");
+      }
     } catch (error) {
       console.error("Error deleting account:", error);
       alert("Error deleting account");
     }
   };
+  
 
   const handleLogout = () => {
     localStorage.removeItem("email");
@@ -204,6 +203,7 @@ export default function UserProfile() {
     router.push("/");
   };
 
+  
   // Preference management functions
   const addPreference = async (type: string, value: string) => {
     if (!value.trim()) return;
