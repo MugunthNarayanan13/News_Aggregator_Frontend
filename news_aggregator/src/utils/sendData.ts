@@ -3,7 +3,7 @@
 import axios from "axios";
 import {toast} from "react-toastify";
 
-const BASE_BACKEND_URL = "http://localhost:5000/api/users";
+const BASE_BACKEND_URL = "http://localhost:5000/NewsAgg/users";
 
 const sendData = async function(url: string, method: "GET" | "POST" | "PUT" | "DELETE", body: {} = {}) {
   const completeUrl = BASE_BACKEND_URL+url;
