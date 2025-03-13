@@ -94,7 +94,7 @@ export default function UserProfile() {
   useEffect(() => {
     if (user?.name) {
       const encodedUsername = encodeURIComponent(user.name.trim());
-      setAvatarUrl(`https://avatar.iran.liara.run/public`);
+      setAvatarUrl(`https://avatar.iran.liara.run/public/boy?username=[value]`);
     }
   }, [user?.name]);
 
@@ -194,7 +194,6 @@ export default function UserProfile() {
       alert("Error deleting account");
     }
   };
-  
 
   const handleLogout = () => {
     localStorage.removeItem("email");
@@ -203,7 +202,6 @@ export default function UserProfile() {
     router.push("/");
   };
 
-  
   // Preference management functions
   const addPreference = async (type: string, value: string) => {
     if (!value.trim()) return;
