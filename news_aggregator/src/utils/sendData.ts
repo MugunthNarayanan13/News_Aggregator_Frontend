@@ -36,7 +36,7 @@ const sendData = async function(url: string, method: "GET" | "POST" | "PUT" | "D
     } else {
       toast.error(response.data);
     }
-    return response.data;
+    return {data: response.data, status: response.status};
   
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
@@ -47,7 +47,7 @@ const sendData = async function(url: string, method: "GET" | "POST" | "PUT" | "D
       console.log("Unexpected Error:", error);
       toast.error("An unexpected error occurred!");
     }
-    return null; // Return null to indicate failure
+    return {data: null, status: 500}; // Return null to indicate failure
   }
 }
 

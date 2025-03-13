@@ -4,36 +4,63 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { UserCircle, LogOut, Trash2, Edit, Lock, ArrowLeft, Save, RefreshCw, Upload, Camera, BarChart, BookOpen, Settings } from "lucide-react";
+import {
+  UserCircle,
+  LogOut,
+  Trash2,
+  Edit,
+  Lock,
+  ArrowLeft,
+  Save,
+  RefreshCw,
+  Upload,
+  Camera,
+  BarChart,
+  BookOpen,
+  Settings,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { sendData } from "@/utils/sendData";
+import { toast } from "react-toastify";
 
-// Mock router to prevent errors when testing UI
-const mockRouter = {
-  push: (path: any) => console.log(`Navigating to: ${path}`)
-};
+interface userData {
+  name: string;
+  email: string;
+  password: string;
+  avatar: string;
+  locations: string[];
+  sources: string[];
+  languages: string[];
+  EntertainmentArticlesRead: number;
+  SportsArticlesRead: number;
+  PoliticalArticlesRead: number;
+  BusinessArticlesRead: number;
+  TechnologyArticlesRead: number;
+  GlobalArticlesRead: number;
+}
 
 export default function UserProfile() {
-  // Use mock router instead of real one for testing
-  const router = typeof window !== 'undefined' ? mockRouter : { push: () => {} };
-  
+  const router = useRouter();
+
   // Pre-populated user data for UI testing
-  const [user, setUser] = useState({
-    _id: "user123",
-    name: "John Doe",
-    email: "john.doe@example.com",
-    password: "password123",
-    avatar: "", // Will store the avatar URL
-    locations: ["New York", "London", "Tokyo"],
-    sources: ["CNN", "BBC", "The Guardian"],
-    languages: ["English", "Spanish", "French"],
-    EntertainmentArticlesRead: 47,
-    SportsArticlesRead: 32,
-    PoliticalArticlesRead: 65,
-    BusinessArticlesRead: 28,
-    TechnologyArticlesRead: 54,
-    GlobalArticlesRead: 39,
+  const [user, setUser] = useState<userData>({
+    name: "",
+    email: "",
+    password: "",
+    avatar: "",
+    locations: [],
+    sources: [],
+    languages: [],
+    EntertainmentArticlesRead: 0,
+    SportsArticlesRead: 0,
+    PoliticalArticlesRead: 0,
+    BusinessArticlesRead: 0,
+    TechnologyArticlesRead: 0,
+    GlobalArticlesRead: 0,
   });
+  const [userID, setUserID] = useState();
 
   const [isLoading, setIsLoading] = useState(false); // Set to false to skip loading screen
   const [isEditing, setIsEditing] = useState(false);
@@ -45,7 +72,7 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("profile");
   const [avatarUrl, setAvatarUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Preference states - initialize with mock data
   const [locations, setLocations] = useState(user.locations);
   const [sources, setSources] = useState(user.sources);
@@ -55,28 +82,50 @@ export default function UserProfile() {
   const [newLanguage, setNewLanguage] = useState("");
 
   // Calculate total articles read
-  const totalArticles = 
-    user.EntertainmentArticlesRead + 
-    user.SportsArticlesRead + 
-    user.PoliticalArticlesRead + 
-    user.BusinessArticlesRead + 
-    user.TechnologyArticlesRead + 
+  const totalArticles =
+    user.EntertainmentArticlesRead +
+    user.SportsArticlesRead +
+    user.PoliticalArticlesRead +
+    user.BusinessArticlesRead +
+    user.TechnologyArticlesRead +
     user.GlobalArticlesRead;
 
-   // Instead of using external avatar service, use placeholder API which is allowed
-   useEffect(() => {
+  // Instead of using external avatar service, use placeholder API which is allowed
+  useEffect(() => {
     if (user?.name) {
       const encodedUsername = encodeURIComponent(user.name.trim());
       setAvatarUrl(`https://avatar.iran.liara.run/public/boy?username=[value]`);
     }
   }, [user?.name]);
 
-  // Skip the real API fetch - just for UI testing
   useEffect(() => {
-    // Add localStorage mock for testing if needed
-    if (typeof window !== 'undefined' && !localStorage.getItem("userId")) {
-      localStorage.setItem("userId", "user123");
-    }
+    const loggedIn = localStorage.getItem("isLoggedIn");
+    if (loggedIn == "0" || !loggedIn) router.replace("/");
+    const fetchUserDetails = async () => {
+      const { data } = await sendData(
+        `/${localStorage.getItem("email")}`,
+        "GET"
+      );
+      console.log("Profile data: ", data);
+      setUser({
+        name: data.name,
+        password: data.password,
+        email: data.email,
+        locations: data.locations,
+        sources: data.sources,
+        languages: data.languages,
+        EntertainmentArticlesRead: data.EntertainmentArticlesRead,
+        SportsArticlesRead: data.SportsArticlesRead,
+        PoliticalArticlesRead: data.PoliticalArticlesRead,
+        BusinessArticlesRead: data.BusinessArticlesRead,
+        TechnologyArticlesRead: data.TechnologyArticlesRead,
+        GlobalArticlesRead: data.GlobalArticlesRead,
+        avatar: data.avatar != null ? data.avatar : "",
+      });
+      setUserID(data._id);
+      localStorage.setItem("userID", data._id);
+    };
+    fetchUserDetails();
   }, []);
 
   const handleAvatarUpload = () => {
@@ -92,8 +141,8 @@ export default function UserProfile() {
       // For demo purposes, I've used a local URL
       const tempUrl = URL.createObjectURL(file);
       setAvatarUrl(tempUrl);
-      setUser({...user, avatar: tempUrl});
-      
+      setUser({ ...user, avatar: tempUrl });
+
       // Show success message
       alert("Avatar uploaded successfully!");
     }
@@ -101,12 +150,12 @@ export default function UserProfile() {
 
   const handleSaveChanges = async () => {
     try {
-      // Mock API response
-      setTimeout(() => {
-        setUser({ ...user, name: newName });
-        setIsEditing(false);
-        alert("Name updated successfully!");
-      }, 500);
+      const { data, status } = await sendData(`/${userID}/name`, "PUT", {
+        name: newName,
+      });
+      if (status == 200) setUser({ ...user, name: newName });
+      setNewName("");
+      setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       alert("Error updating profile");
@@ -115,18 +164,17 @@ export default function UserProfile() {
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords don't match");
+      toast.warn("Passwords don't match");
       return;
     }
-    
     try {
-      // Mock API response
-      setTimeout(() => {
-        alert("Password updated successfully");
-        setIsChangingPassword(false);
-        setNewPassword("");
-        setConfirmPassword("");
-      }, 500);
+      const { data, status } = await sendData(`/${userID}/password`, "PUT", {
+        password: newPassword,
+      });
+      if (status == 200) setUser({ ...user, password: newPassword });
+      setIsChangingPassword(false);
+      setNewPassword("");
+      setConfirmPassword("");
     } catch (error) {
       console.error("Error updating password:", error);
       alert("Error updating password");
@@ -137,7 +185,7 @@ export default function UserProfile() {
     try {
       // Mock API response
       setTimeout(() => {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           localStorage.removeItem("userId");
         }
         alert("Your account has been deleted.");
@@ -150,37 +198,37 @@ export default function UserProfile() {
   };
 
   const handleLogout = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem("userId");
-    }
-    router.push("/login");
+    localStorage.removeItem("email");
+    localStorage.removeItem("userID");
+    localStorage.removeItem("isLoggedIn");
+    router.push("/");
   };
 
   // Preference management functions
   const addPreference = async (type: string, value: string) => {
     if (!value.trim()) return;
-    
+
     try {
       let updatedList = [];
-      
-      if (type === 'locations') {
+
+      if (type === "locations") {
         updatedList = [...locations, value];
         setLocations(updatedList);
-        setUser({...user, locations: updatedList});
-      } else if (type === 'sources') {
+        setUser({ ...user, locations: updatedList });
+      } else if (type === "sources") {
         updatedList = [...sources, value];
         setSources(updatedList);
-        setUser({...user, sources: updatedList});
-      } else if (type === 'languages') {
+        setUser({ ...user, sources: updatedList });
+      } else if (type === "languages") {
         updatedList = [...languages, value];
         setLanguages(updatedList);
-        setUser({...user, languages: updatedList});
+        setUser({ ...user, languages: updatedList });
       }
-      
+
       // Clear input field
-      if (type === 'locations') setNewLocation("");
-      else if (type === 'sources') setNewSource("");
-      else if (type === 'languages') setNewLanguage("");
+      if (type === "locations") setNewLocation("");
+      else if (type === "sources") setNewSource("");
+      else if (type === "languages") setNewLanguage("");
     } catch (error) {
       console.error(`Error adding ${type}:`, error);
     }
@@ -189,19 +237,19 @@ export default function UserProfile() {
   const removePreference = async (type: string, index: number) => {
     try {
       let updatedList = [];
-      
-      if (type === 'locations') {
+
+      if (type === "locations") {
         updatedList = locations.filter((_, i) => i !== index);
         setLocations(updatedList);
-        setUser({...user, locations: updatedList});
-      } else if (type === 'sources') {
+        setUser({ ...user, locations: updatedList });
+      } else if (type === "sources") {
         updatedList = sources.filter((_, i) => i !== index);
         setSources(updatedList);
-        setUser({...user, sources: updatedList});
-      } else if (type === 'languages') {
+        setUser({ ...user, sources: updatedList });
+      } else if (type === "languages") {
         updatedList = languages.filter((_, i) => i !== index);
         setLanguages(updatedList);
-        setUser({...user, languages: updatedList});
+        setUser({ ...user, languages: updatedList });
       }
     } catch (error) {
       console.error(`Error removing ${type}:`, error);
@@ -213,14 +261,14 @@ export default function UserProfile() {
       setLocations([]);
       setSources([]);
       setLanguages([]);
-      
+
       setUser({
         ...user,
         locations: [],
         sources: [],
-        languages: []
+        languages: [],
       });
-      
+
       alert("Preferences reset successfully");
     } catch (error) {
       console.error("Error resetting preferences:", error);
@@ -253,47 +301,53 @@ export default function UserProfile() {
         <div className="relative group">
           <div className="h-32 w-32 rounded-full overflow-hidden bg-white shadow-lg border-4 border-white">
             {avatarUrl ? (
-              <Image 
-                src={avatarUrl} 
-                alt={user.name} 
-                width={128} 
-                height={128} 
+              <Image
+                src={avatarUrl}
+                alt={user.name}
+                width={128}
+                height={128}
                 className="h-full w-full object-cover"
               />
             ) : (
               <UserCircle size={128} className="text-gray-400" />
             )}
           </div>
-          <button 
+          <button
             onClick={handleAvatarUpload}
             className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           >
             <Camera size={24} className="text-white" />
           </button>
           <input
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            accept="image/*" 
-            className="hidden" 
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
           />
         </div>
-        
+
         <div className="text-center md:text-left flex-1 mt-4 md:mt-0">
           <h1 className="text-3xl font-bold text-gray-800">{user.name}</h1>
           <p className="text-gray-600 mt-1">{user.email}</p>
           <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
             {languages.map((language, index) => (
-              <span key={index} className="px-3 py-1 bg-purple-100 text-primary rounded-full text-sm font-medium">
+              <span
+                key={index}
+                className="px-3 py-1 bg-purple-100 text-primary rounded-full text-sm font-medium"
+              >
                 {language}
               </span>
             ))}
           </div>
           <div className="mt-4">
-            <p className="text-sm text-gray-500">Total Articles Read: <span className="font-bold text-primary">{totalArticles}</span></p>
+            <p className="text-sm text-gray-500">
+              Total Articles Read:{" "}
+              <span className="font-bold text-primary">{totalArticles}</span>
+            </p>
           </div>
         </div>
-        
+
         <button
           onClick={handleLogout}
           className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md transition-colors duration-300 shadow-sm"
@@ -307,8 +361,8 @@ export default function UserProfile() {
         <button
           onClick={() => setActiveTab("profile")}
           className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-300 ${
-            activeTab === "profile" 
-              ? "text-primary border-b-2 border-primary" 
+            activeTab === "profile"
+              ? "text-primary border-b-2 border-primary"
               : "text-gray-600 hover:text-gray-800"
           }`}
         >
@@ -317,8 +371,8 @@ export default function UserProfile() {
         <button
           onClick={() => setActiveTab("preferences")}
           className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-300 ${
-            activeTab === "preferences" 
-              ? "text-primary border-b-2 border-primary" 
+            activeTab === "preferences"
+              ? "text-primary border-b-2 border-primary"
               : "text-gray-600 hover:text-gray-800"
           }`}
         >
@@ -327,8 +381,8 @@ export default function UserProfile() {
         <button
           onClick={() => setActiveTab("stats")}
           className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-300 ${
-            activeTab === "stats" 
-              ? "text-primary border-b-2 border-primary" 
+            activeTab === "stats"
+              ? "text-primary border-b-2 border-primary"
               : "text-gray-600 hover:text-gray-800"
           }`}
         >
@@ -343,7 +397,9 @@ export default function UserProfile() {
             {/* Profile Information */}
             <div className="bg-background_light p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Profile Information</h3>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Profile Information
+                </h3>
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
@@ -357,7 +413,12 @@ export default function UserProfile() {
               {isEditing ? (
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Name</label>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Name
+                    </label>
                     <input
                       id="name"
                       type="text"
@@ -384,11 +445,15 @@ export default function UserProfile() {
               ) : (
                 <div className="space-y-3">
                   <div className="flex flex-col md:flex-row md:items-center md:gap-3">
-                    <span className="text-sm font-medium text-gray-500">Name:</span>
+                    <span className="text-sm font-medium text-gray-500">
+                      Name:
+                    </span>
                     <span className="text-gray-800">{user.name}</span>
                   </div>
                   <div className="flex flex-col md:flex-row md:items-center md:gap-3">
-                    <span className="text-sm font-medium text-gray-500">Email:</span>
+                    <span className="text-sm font-medium text-gray-500">
+                      Email:
+                    </span>
                     <span className="text-gray-800">{user.email}</span>
                   </div>
                 </div>
@@ -397,12 +462,19 @@ export default function UserProfile() {
 
             {/* Password Change */}
             <div className="bg-background_light p-6 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Security</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                Security
+              </h3>
+
               {isChangingPassword ? (
                 <div className="space-y-4">
                   <div>
-                    <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">New Password</label>
+                    <label
+                      htmlFor="newPassword"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      New Password
+                    </label>
                     <input
                       id="newPassword"
                       type="password"
@@ -412,7 +484,12 @@ export default function UserProfile() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <label
+                      htmlFor="confirmPassword"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Confirm Password
+                    </label>
                     <input
                       id="confirmPassword"
                       type="password"
@@ -452,7 +529,9 @@ export default function UserProfile() {
 
             {/* Danger Zone */}
             <div className="bg-red-50 p-6 rounded-lg border border-red-200 shadow-sm transition-all duration-300 hover:shadow-md">
-              <h3 className="text-lg font-semibold text-red-700 mb-4">Danger Zone</h3>
+              <h3 className="text-lg font-semibold text-red-700 mb-4">
+                Danger Zone
+              </h3>
               <button
                 onClick={() => setIsDeleting(true)}
                 className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 rounded-md transition-all duration-300"
@@ -461,16 +540,19 @@ export default function UserProfile() {
               </button>
               {isDeleting && (
                 <div className="mt-4 p-4 bg-white border border-red-300 rounded-md shadow-sm">
-                  <p className="text-red-600">Are you sure you want to delete your account? This action cannot be undone.</p>
+                  <p className="text-red-600">
+                    Are you sure you want to delete your account? This action
+                    cannot be undone.
+                  </p>
                   <div className="flex gap-2 mt-3">
-                    <button 
-                      onClick={handleDeleteAccount} 
+                    <button
+                      onClick={handleDeleteAccount}
                       className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-300 shadow-sm"
                     >
                       Yes, Delete My Account
                     </button>
-                    <button 
-                      onClick={() => setIsDeleting(false)} 
+                    <button
+                      onClick={() => setIsDeleting(false)}
                       className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors duration-300"
                     >
                       Cancel
@@ -495,20 +577,25 @@ export default function UserProfile() {
                 <RefreshCw size={14} /> Reset All
               </button>
             </div>
-            
+
             {/* Languages */}
             <div className="bg-background_light p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
               <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 flex items-center justify-center bg-purple-100 text-primary rounded-full">L</span>
+                <span className="w-6 h-6 flex items-center justify-center bg-purple-100 text-primary rounded-full">
+                  L
+                </span>
                 Languages
               </h4>
               <div className="flex flex-wrap gap-2 mb-3">
                 {languages.length > 0 ? (
                   languages.map((language, index) => (
-                    <div key={index} className="flex items-center bg-purple-100 rounded-full overflow-hidden shadow-sm hover:shadow transition-shadow duration-300">
+                    <div
+                      key={index}
+                      className="flex items-center bg-purple-100 rounded-full overflow-hidden shadow-sm hover:shadow transition-shadow duration-300"
+                    >
                       <span className="px-3 py-1 text-primary">{language}</span>
                       <button
-                        onClick={() => removePreference('languages', index)}
+                        onClick={() => removePreference("languages", index)}
                         className="p-1 bg-purple-200 text-primary hover:bg-purple-300 transition-colors duration-300"
                       >
                         &times;
@@ -528,27 +615,34 @@ export default function UserProfile() {
                   className="flex-1 p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
                 />
                 <button
-                  onClick={() => addPreference('languages', newLanguage)}
+                  onClick={() => addPreference("languages", newLanguage)}
                   className="px-3 bg-primary text-white rounded-r-md hover:bg-secondary transition-colors duration-300"
                 >
                   Add
                 </button>
               </div>
             </div>
-            
+
             {/* Locations */}
             <div className="bg-background_light p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
               <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 flex items-center justify-center bg-green-100 text-green-800 rounded-full">L</span>
+                <span className="w-6 h-6 flex items-center justify-center bg-green-100 text-green-800 rounded-full">
+                  L
+                </span>
                 Locations
               </h4>
               <div className="flex flex-wrap gap-2 mb-3">
                 {locations.length > 0 ? (
                   locations.map((location, index) => (
-                    <div key={index} className="flex items-center bg-green-100 rounded-full overflow-hidden shadow-sm hover:shadow transition-shadow duration-300">
-                      <span className="px-3 py-1 text-green-800">{location}</span>
+                    <div
+                      key={index}
+                      className="flex items-center bg-green-100 rounded-full overflow-hidden shadow-sm hover:shadow transition-shadow duration-300"
+                    >
+                      <span className="px-3 py-1 text-green-800">
+                        {location}
+                      </span>
                       <button
-                        onClick={() => removePreference('locations', index)}
+                        onClick={() => removePreference("locations", index)}
                         className="p-1 bg-green-200 text-green-800 hover:bg-green-300 transition-colors duration-300"
                       >
                         &times;
@@ -568,27 +662,32 @@ export default function UserProfile() {
                   className="flex-1 p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
                 />
                 <button
-                  onClick={() => addPreference('locations', newLocation)}
+                  onClick={() => addPreference("locations", newLocation)}
                   className="px-3 bg-primary text-white rounded-r-md hover:bg-secondary transition-colors duration-300"
                 >
                   Add
                 </button>
               </div>
             </div>
-            
+
             {/* Sources */}
             <div className="bg-background_light p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md">
               <h4 className="font-medium text-gray-700 mb-3 flex items-center gap-2">
-                <span className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-800 rounded-full">S</span>
+                <span className="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-800 rounded-full">
+                  S
+                </span>
                 News Sources
               </h4>
               <div className="flex flex-wrap gap-2 mb-3">
                 {sources.length > 0 ? (
                   sources.map((source, index) => (
-                    <div key={index} className="flex items-center bg-blue-100 rounded-full overflow-hidden shadow-sm hover:shadow transition-shadow duration-300">
+                    <div
+                      key={index}
+                      className="flex items-center bg-blue-100 rounded-full overflow-hidden shadow-sm hover:shadow transition-shadow duration-300"
+                    >
                       <span className="px-3 py-1 text-blue-800">{source}</span>
                       <button
-                        onClick={() => removePreference('sources', index)}
+                        onClick={() => removePreference("sources", index)}
                         className="p-1 bg-blue-200 text-blue-800 hover:bg-blue-300 transition-colors duration-300"
                       >
                         &times;
@@ -608,7 +707,7 @@ export default function UserProfile() {
                   className="flex-1 p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
                 />
                 <button
-                  onClick={() => addPreference('sources', newSource)}
+                  onClick={() => addPreference("sources", newSource)}
                   className="px-3 bg-primary text-white rounded-r-md hover:bg-secondary transition-colors duration-300"
                 >
                   Add
@@ -623,7 +722,7 @@ export default function UserProfile() {
             <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
               <BarChart size={20} className="text-primary" /> Reading Statistics
             </h3>
-            
+
             {/* Summary Card */}
             <div className="bg-gradient-to-r from-primary to-secondary text-white p-6 rounded-lg shadow-md transition-transform duration-300 hover:scale-105">
               <div className="flex items-center gap-3">
@@ -635,56 +734,75 @@ export default function UserProfile() {
                 </div>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Entertainment */}
               <div className="bg-background_light p-4 rounded-lg shadow-sm transition-transform duration-300 hover:scale-105">
-                <h4 className="font-medium text-gray-700 mb-2">Entertainment</h4>
+                <h4 className="font-medium text-gray-700 mb-2">
+                  Entertainment
+                </h4>
                 <div className="flex items-end gap-2">
-                  <span className="text-2xl font-bold text-primary">{user.EntertainmentArticlesRead}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {user.EntertainmentArticlesRead}
+                  </span>
                   <span className="text-gray-500">articles</span>
                 </div>
                 <div className="mt-2 h-4 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full transition-all duration-500" 
-                    style={{ width: `${calculatePercentage(user.EntertainmentArticlesRead)}%` }}
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{
+                      width: `${calculatePercentage(
+                        user.EntertainmentArticlesRead
+                      )}%`,
+                    }}
                   ></div>
                 </div>
                 <div className="text-right text-xs text-gray-500 mt-1">
-                  {calculatePercentage(user.EntertainmentArticlesRead)}% of total
+                  {calculatePercentage(user.EntertainmentArticlesRead)}% of
+                  total
                 </div>
               </div>
-              
+
               {/* Sports */}
               <div className="bg-background_light p-4 rounded-lg shadow-sm transition-transform duration-300 hover:scale-105">
                 <h4 className="font-medium text-gray-700 mb-2">Sports</h4>
                 <div className="flex items-end gap-2">
-                  <span className="text-2xl font-bold text-primary">{user.SportsArticlesRead}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {user.SportsArticlesRead}
+                  </span>
                   <span className="text-gray-500">articles</span>
                 </div>
                 <div className="mt-2 h-4 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full transition-all duration-500" 
-                    style={{ width: `${calculatePercentage(user.SportsArticlesRead)}%` }}
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{
+                      width: `${calculatePercentage(user.SportsArticlesRead)}%`,
+                    }}
                   ></div>
                 </div>
                 <div className="text-right text-xs text-gray-500 mt-1">
                   {calculatePercentage(user.SportsArticlesRead)}% of total
                 </div>
               </div>
-              
+
               {/* Politics */}
               <div className="bg-background_light p-4 rounded-lg shadow-sm transition-transform duration-300 hover:scale-105">
                 <h4 className="font-medium text-gray-700 mb-2">Politics</h4>
                 <div className="flex items-end gap-2">
-                  <span className="text-2xl font-bold text-primary">{user.PoliticalArticlesRead}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {user.PoliticalArticlesRead}
+                  </span>
                   <span className="text-gray-500">articles</span>
                 </div>
                 <div className="mt-2 h-4 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full transition-all duration-500" 
-                    style={{ width: `${calculatePercentage(user.PoliticalArticlesRead)}%` }}
-></div>
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{
+                      width: `${calculatePercentage(
+                        user.PoliticalArticlesRead
+                      )}%`,
+                    }}
+                  ></div>
                 </div>
                 <div className="text-right text-xs text-gray-500 mt-1">
                   {calculatePercentage(user.PoliticalArticlesRead)}% of total
@@ -695,49 +813,65 @@ export default function UserProfile() {
               <div className="bg-background_light p-4 rounded-lg shadow-sm transition-transform duration-300 hover:scale-105">
                 <h4 className="font-medium text-gray-700 mb-2">Business</h4>
                 <div className="flex items-end gap-2">
-                  <span className="text-2xl font-bold text-primary">{user.BusinessArticlesRead}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {user.BusinessArticlesRead}
+                  </span>
                   <span className="text-gray-500">articles</span>
                 </div>
                 <div className="mt-2 h-4 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full transition-all duration-500" 
-                    style={{ width: `${calculatePercentage(user.BusinessArticlesRead)}%` }}
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{
+                      width: `${calculatePercentage(
+                        user.BusinessArticlesRead
+                      )}%`,
+                    }}
                   ></div>
                 </div>
                 <div className="text-right text-xs text-gray-500 mt-1">
                   {calculatePercentage(user.BusinessArticlesRead)}% of total
                 </div>
               </div>
-              
+
               {/* Technology */}
               <div className="bg-background_light p-4 rounded-lg shadow-sm transition-transform duration-300 hover:scale-105">
                 <h4 className="font-medium text-gray-700 mb-2">Technology</h4>
                 <div className="flex items-end gap-2">
-                  <span className="text-2xl font-bold text-primary">{user.TechnologyArticlesRead}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {user.TechnologyArticlesRead}
+                  </span>
                   <span className="text-gray-500">articles</span>
                 </div>
                 <div className="mt-2 h-4 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full transition-all duration-500" 
-                    style={{ width: `${calculatePercentage(user.TechnologyArticlesRead)}%` }}
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{
+                      width: `${calculatePercentage(
+                        user.TechnologyArticlesRead
+                      )}%`,
+                    }}
                   ></div>
                 </div>
                 <div className="text-right text-xs text-gray-500 mt-1">
                   {calculatePercentage(user.TechnologyArticlesRead)}% of total
                 </div>
               </div>
-              
+
               {/* Global */}
               <div className="bg-background_light p-4 rounded-lg shadow-sm transition-transform duration-300 hover:scale-105">
                 <h4 className="font-medium text-gray-700 mb-2">Global</h4>
                 <div className="flex items-end gap-2">
-                  <span className="text-2xl font-bold text-primary">{user.GlobalArticlesRead}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {user.GlobalArticlesRead}
+                  </span>
                   <span className="text-gray-500">articles</span>
                 </div>
                 <div className="mt-2 h-4 w-full bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-primary rounded-full transition-all duration-500" 
-                    style={{ width: `${calculatePercentage(user.GlobalArticlesRead)}%` }}
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-500"
+                    style={{
+                      width: `${calculatePercentage(user.GlobalArticlesRead)}%`,
+                    }}
                   ></div>
                 </div>
                 <div className="text-right text-xs text-gray-500 mt-1">
@@ -745,17 +879,25 @@ export default function UserProfile() {
                 </div>
               </div>
             </div>
-            
+
             {/* Reading Progress */}
             <div className="bg-background_light p-6 rounded-lg shadow-md">
-              <h4 className="font-medium text-gray-700 mb-4">Reading Progress</h4>
-              <div className="text-sm text-gray-600 mb-2">You're in the top 25% of active readers this month!</div>
+              <h4 className="font-medium text-gray-700 mb-4">
+                Reading Progress
+              </h4>
+              <div className="text-sm text-gray-600 mb-2">
+                You're in the top 25% of active readers this month!
+              </div>
               <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-green-500 rounded-full" style={{ width: '75%' }}></div>
+                <div
+                  className="h-full bg-green-500 rounded-full"
+                  style={{ width: "75%" }}
+                ></div>
               </div>
               <div className="mt-4 text-center">
                 <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-colors duration-300 shadow-sm hover:shadow flex items-center gap-2 mx-auto">
-                  <BookOpen size={16} /> <Link href="/">Find More Articles</Link>
+                  <BookOpen size={16} />{" "}
+                  <Link href="/home">Find More Articles</Link>
                 </button>
               </div>
             </div>
