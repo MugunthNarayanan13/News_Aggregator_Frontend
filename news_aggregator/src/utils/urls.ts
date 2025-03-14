@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 console.log("Loaded API Key:", process.env.NEXT_PUBLIC_API_KEY);
 
 const apiKey = process.env.NEXT_PUBLIC_API_KEY
