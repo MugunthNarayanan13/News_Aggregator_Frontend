@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { sendData } from "@/utils/sendData";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +36,7 @@ export default function LoginPage() {
     setError("");
 
     // Redirect to /home after successful 
-    if(data.message == "Login successful") {
+    if (data.message == "Login successful") {
       router.push("/home");
     }
   };
@@ -45,90 +47,95 @@ export default function LoginPage() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#cdd7f0] dark:bg-background_dark">
-      <form
-        onSubmit={(e) => handleLogin(e)}
-        className="w-full max-w-sm p-8 bg-white dark:bg-foreground_dark rounded-2xl shadow-xl space-y-6 border border-[#cdd7f0]"
-      >
-        <h2 className="text-2xl font-semibold text-center text-black dark:text-white">
-          Login to News Daily
-        </h2>
-        {error && <p className="text-red-600 text-sm text-center">{error}</p>}
+    <>
+      <div className="absolute top-4 right-4">
+        <ThemeSwitcher />
+      </div>
+      <div className="min-h-screen flex items-center justify-center bg-[#cdd7f0] dark:bg-background_dark">
+        <form
+          onSubmit={(e) => handleLogin(e)}
+          className="w-full max-w-sm p-8 bg-white dark:bg-foreground_dark rounded-2xl shadow-xl space-y-6 border border-[#cdd7f0]"
+        >
+          <h2 className="text-2xl font-semibold text-center text-black dark:text-white">
+            Login to News Daily
+          </h2>
+          {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
-        <div>
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Email
-          </label>
-          <input
-            type="email"
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-        <div className="relative">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type={showPassword ? "text" : "password"}
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 pr-10"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              type={showPassword ? "text" : "password"}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 pr-10"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-9 right-3 text-gray-500"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+
+          <div className="flex justify-end">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-[#687EFF] hover:underline"
+            >
+              Forgot password?
+            </Link>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-[#687EFF] text-white py-2 rounded-lg hover:bg-[#5a6be0] transition duration-200"
+          >
+            Login
+          </button>
+
+          {/* Divider Line */}
+          <div className="flex items-center justify-center space-x-2">
+            <div className="w-full h-px bg-gray-300"></div>
+            <span className="text-sm text-gray-500">or</span>
+            <div className="w-full h-px bg-gray-300"></div>
+          </div>
+
+          {/* Continue as Guest Button */}
           <button
             type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute top-9 right-3 text-gray-500"
+            onClick={handleGuestLogin}
+            className="w-full border border-[#687EFF] text-[#687EFF] py-2 rounded-lg hover:bg-[#687EFF]/10 transition duration-200"
           >
-            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            Continue as Guest
           </button>
-        </div>
 
-        <div className="flex justify-end">
-          <Link
-            href="/forgot-password"
-            className="text-sm text-[#687EFF] hover:underline"
-          >
-            Forgot password?
-          </Link>
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-[#687EFF] text-white py-2 rounded-lg hover:bg-[#5a6be0] transition duration-200"
-        >
-          Login
-        </button>
-
-         {/* Divider Line */}
-         <div className="flex items-center justify-center space-x-2">
-          <div className="w-full h-px bg-gray-300"></div>
-          <span className="text-sm text-gray-500">or</span>
-          <div className="w-full h-px bg-gray-300"></div>
-        </div>
-
-        {/* Continue as Guest Button */}
-        <button
-          type="button"
-          onClick={handleGuestLogin}
-          className="w-full border border-[#687EFF] text-[#687EFF] py-2 rounded-lg hover:bg-[#687EFF]/10 transition duration-200"
-        >
-          Continue as Guest
-        </button>
-
-        <p className="text-center text-sm text-gray-700 mt-2">
-          Don’t have an account?{" "}
-          <Link href="/signup" className="text-[#687EFF] hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </form>
-    </div>
+          <p className="text-center text-sm text-gray-700 mt-2">
+            Don’t have an account?{" "}
+            <Link href="/signup" className="text-[#687EFF] hover:underline">
+              Sign up
+            </Link>
+          </p>
+        </form>
+      </div>
+    </>
   );
 }
