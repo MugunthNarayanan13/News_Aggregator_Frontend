@@ -36,7 +36,7 @@ export default function SignupPage() {
       return;
     }
 
-    const data = await sendData("/", "POST", {
+    const {data} = await sendData("/", "POST", {
       name: username,
       email,
       password,
