@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Settings, RefreshCw } from "lucide-react";
+import { sendData } from "@/utils/sendData";
+import { convertToISO } from "@/utils/isoConverterLang";
+import { convertCountryToISO } from "@/utils/isoConverterLoc";
 
 interface PreferencesSectionProps {
   user: {
@@ -30,6 +33,9 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
   const addPreference = async (type: string, value: string) => {
     if (!value.trim()) return;
 
+    const userID = localStorage.getItem("userID");
+    if (!userID) return;
+
     try {
       let updatedList = [];
 
@@ -37,14 +43,33 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
         updatedList = [...locations, value];
         setLocations(updatedList);
         setUser({ ...user, locations: updatedList });
+
+        // Convert location to ISO code before saving
+        const isoLocation = convertCountryToISO(value);
+        
+        // Update locations in backend
+        await sendData(`/${userID}/locations`, "PUT", {
+          locations: [isoLocation]
+        });
+
       } else if (type === "sources") {
         updatedList = [...sources, value];
         setSources(updatedList);
         setUser({ ...user, sources: updatedList });
+        // Update sources in backend
+        await sendData(`/${userID}/sources`, "PUT", {
+          sources: [value]
+        });
       } else if (type === "languages") {
-        updatedList = [...languages, value];
+        const isoLanguage = convertToISO(value);
+        const displayLanguage = value.trim(); // Keep original for display
+        updatedList = [...languages, displayLanguage];
         setLanguages(updatedList);
         setUser({ ...user, languages: updatedList });
+        
+        await sendData(`/${userID}/languages`, "PUT", {
+          languages: [isoLanguage]
+        });
       }
 
       // Clear input field
@@ -57,21 +82,41 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
   };
 
   const removePreference = async (type: string, index: number) => {
+    const userID = localStorage.getItem("userID");
+    if (!userID) return;
     try {
       let updatedList = [];
+      let valueToRemove;
 
       if (type === "locations") {
+        valueToRemove = locations[index];
         updatedList = locations.filter((_, i) => i !== index);
         setLocations(updatedList);
         setUser({ ...user, locations: updatedList });
+        const isoLocation = convertCountryToISO(valueToRemove);
+        await sendData(`/${userID}/locations/remove`, "PUT", {
+          location: isoLocation
+        });
+
       } else if (type === "sources") {
+        valueToRemove = sources[index];
         updatedList = sources.filter((_, i) => i !== index);
         setSources(updatedList);
         setUser({ ...user, sources: updatedList });
+        
+        
+        await sendData(`/${userID}/sources/remove`, "PUT", {
+          source: valueToRemove
+        });
       } else if (type === "languages") {
+        valueToRemove = languages[index];
         updatedList = languages.filter((_, i) => i !== index);
         setLanguages(updatedList);
         setUser({ ...user, languages: updatedList });
+        const isoLanguage = convertToISO(valueToRemove);
+        await sendData(`/${userID}/languages/remove`, "PUT", {
+          language: isoLanguage
+        });
       }
     } catch (error) {
       console.error(`Error removing ${type}:`, error);
@@ -79,6 +124,8 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
   };
 
   const resetPreferences = async () => {
+    const userID = localStorage.getItem("userID");
+    if (!userID) return;
     try {
       setLocations([]);
       setSources([]);
