@@ -81,7 +81,7 @@ export default function NavBar({
           </div>
         </div>
 
-        <div className="flex-1 flex items-center gap-6 -ml-10">
+        <div className="flex-1 flex items-center gap-6 -ml-50">
           <div className="hidden sm:flex mx-auto items-center gap-2 bg-white dark:bg-gray-800 rounded-[20px] px-4 py-2 w-[90%] sm:w-[35rem] justify-between border-2 border-foreground_light dark:border-gray-600">
             <Search size={18} className="text-black dark:text-white" />
             <input
@@ -150,7 +150,7 @@ export default function NavBar({
         </div>
       </div>
       {/* Category Section */}
-      <div className="bg-foreground_light py-3 rounded-2xl w-fit px-5 mx-auto mt-2 flex flex-col gap-2">
+      <div className="bg-foreground_light py-3 rounded-2xl w-fit px-5 ml-auto mr-[36%] mt-2 flex flex-col gap-2">
         <div className="container mx-auto flex justify-center gap-6 text-sm">
           <button
             onClick={() => onCategorySelect("world")}
