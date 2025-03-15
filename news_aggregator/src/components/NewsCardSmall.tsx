@@ -102,7 +102,7 @@ export default function NewsCardSmall({
               ⋮
             </button>
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md z-20 text-sm">
+              <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md z-20 text-sm dark:text-black">
                 <button
                   className="w-full text-left px-4 py-2 hover:bg-gray-100"
                   onClick={(e) => {
@@ -119,7 +119,7 @@ export default function NewsCardSmall({
         </div>
 
         {/* Date Section */}
-        <div className="px-3 mt-1 text-xs md:text-sm font-light">
+        <div className="px-3 mt-1 text-xs md:text-sm font-light dark:text-black">
           {timeAgo(pubDate, pubDateTZ)}
         </div>
 

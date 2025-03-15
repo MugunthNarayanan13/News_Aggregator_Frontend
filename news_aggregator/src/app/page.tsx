@@ -37,7 +37,7 @@ export default function LoginPage() {
     setError("");
 
     // Redirect to /home after successful 
-    if(data.message == "Login successful") {
+    if(data && data.message == "Login successful") {
       localStorage.setItem("isLoggedIn", "1");
       localStorage.setItem("email", email);
       router.push("/home");

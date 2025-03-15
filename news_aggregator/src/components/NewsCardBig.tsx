@@ -118,7 +118,7 @@ export default function NewsCardBig({
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md z-20 text-sm">
                 <button
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100 dark:text-black"
                   onClick={(e) => handleDropdownAction("Subscribe", e)}
                 >
                   Subscribe to Source
@@ -129,19 +129,19 @@ export default function NewsCardBig({
         </div>
 
         {/* Title */}
-        <div className="flex flex-row justify-between px-3 mt-1 gap-1">
+        <div className="flex flex-row justify-between px-3 mt-1 gap-1 dark:text-black">
           <div className="font-light text-sm md:text-base lg:text-lg">
             {truncateText(title, 65)}
           </div>
         </div>
 
         {/* Description */}
-        <div className="px-3 py-1 mt-2 font-normal text-xs md:text-sm">
+        <div className="px-3 py-1 mt-2 font-normal text-xs md:text-sm dark:text-black">
           {truncateText(desc, 130)}
         </div>
 
         {/* Time Ago */}
-        <div className="px-3 py-1 mt-1 mb-1 font-light text-xs md:text-sm">
+        <div className="px-3 py-1 mt-1 mb-1 font-light text-xs md:text-sm dark:text-black">
           <p>{timeAgo(pubDate, pubDateTZ)}</p>
         </div>
 
