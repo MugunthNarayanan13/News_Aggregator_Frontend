@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { Settings, RefreshCw } from "lucide-react";
+import { Settings, RefreshCw,BookOpen } from "lucide-react";
 import { sendData } from "@/utils/sendData";
 import { convertToISO } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
 import { isValidLanguage } from "@/utils/isoConverterLang";
 import { toast } from "react-toastify";
-
+import Link from "next/link";
 
 interface PreferencesSectionProps {
   user: {
@@ -315,6 +315,14 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
             Add
           </button>
         </div>
+      </div>
+      <div className="mt-6 text-center">
+        <Link href="/home">
+          <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-colors duration-300 shadow-sm hover:shadow flex items-center gap-2 mx-auto">
+            <BookOpen size={16} />
+            Find More Articles
+          </button>
+        </Link>
       </div>
     </div>
   );

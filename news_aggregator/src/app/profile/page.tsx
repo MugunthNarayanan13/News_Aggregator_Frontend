@@ -8,8 +8,9 @@ import PreferencesSection from "@/components/PreferencesSection";
 import ReadStats from "@/components/ReadStats";
 import SecuritySection from "@/components/SecuritySection";
 import DangerZone from "@/components/DangerZone";
-import { BarChartIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
+import { BarChartIcon, SettingsIcon, UserCircleIcon, BookOpen } from "lucide-react";
 import ProfileSection from "@/components/ProfileSection";
+import Link from "next/link";
 
 interface UserData {
   name: string;
@@ -183,7 +184,16 @@ export default function UserProfile() {
 
             {/* Danger Zone */}
             <DangerZone userID={userID} />
+            <div className="mt-6 text-center">
+              <Link href="/home">
+                <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-colors duration-300 shadow-sm hover:shadow flex items-center gap-2 mx-auto">
+                  <BookOpen size={16} />
+                  Find More Articles
+                </button>
+              </Link>
+            </div>
           </div>
+          
         )}
 
         {activeTab === "preferences" && (
