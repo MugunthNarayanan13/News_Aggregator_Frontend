@@ -4,6 +4,9 @@ import { Settings, RefreshCw } from "lucide-react";
 import { sendData } from "@/utils/sendData";
 import { convertToISO } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
+import { isValidLanguage } from "@/utils/isoConverterLang";
+import { toast } from "react-toastify";
+
 
 interface PreferencesSectionProps {
   user: {
@@ -40,19 +43,31 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
       let updatedList = [];
 
       if (type === "locations") {
-        updatedList = [...locations, value];
+        const trimmedValue = value.trim();
+        const isoLocation = convertCountryToISO(trimmedValue);
+      
+        // Validate location
+        if (!isoLocation || isoLocation === trimmedValue) {
+          toast.warning("Invalid or unsupported location");
+          return;
+        }
+      
+        // Check for duplicates
+        if (locations.includes(isoLocation)) {
+          toast.warning("Location already added");
+          return;
+        }
+      
+        updatedList = [...locations, isoLocation];
         setLocations(updatedList);
         setUser({ ...user, locations: updatedList });
-
-        // Convert location to ISO code before saving
-        const isoLocation = convertCountryToISO(value);
-        
+      
         // Update locations in backend
         await sendData(`/${userID}/locations`, "PUT", {
           locations: [isoLocation]
         });
-
-      } else if (type === "sources") {
+      }
+       else if (type === "sources") {
         updatedList = [...sources, value];
         setSources(updatedList);
         setUser({ ...user, sources: updatedList });
@@ -61,16 +76,23 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
           sources: [value]
         });
       } else if (type === "languages") {
+        if (!isValidLanguage(value)) {
+          alert(`'${value}' is not a valid language. Please try again.`);
+          return;
+        }
+      
         const isoLanguage = convertToISO(value);
-        const displayLanguage = value.trim(); // Keep original for display
+        const displayLanguage = value.trim();
+      
         updatedList = [...languages, displayLanguage];
         setLanguages(updatedList);
         setUser({ ...user, languages: updatedList });
-        
+      
         await sendData(`/${userID}/languages`, "PUT", {
           languages: [isoLanguage]
         });
       }
+
 
       // Clear input field
       if (type === "locations") setNewLocation("");

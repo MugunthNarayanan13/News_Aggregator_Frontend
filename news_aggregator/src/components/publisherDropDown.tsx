@@ -58,7 +58,7 @@ const SingleSelectDropdownPublishers: React.FC<
 
   return (
     <Select
-      className="flex-1"
+      className="flex-1 dark:text-black"
       options={publishers.map((publisher) => ({
         label: publisher.name,
         value: publisher.id,

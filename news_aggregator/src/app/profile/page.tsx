@@ -9,7 +9,7 @@ import ReadStats from "@/components/ReadStats";
 import SecuritySection from "@/components/SecuritySection";
 import DangerZone from "@/components/DangerZone";
 import { BarChartIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
-import ProfileSection from "@/components/profileSection";
+import ProfileSection from "@/components/ProfileSection";
 
 interface UserData {
   name: string;
