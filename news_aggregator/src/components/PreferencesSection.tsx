@@ -4,6 +4,7 @@ import { Settings, RefreshCw } from "lucide-react";
 import { sendData } from "@/utils/sendData";
 import { convertToISO } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
+import { isValidLanguage } from "@/utils/isoConverterLang"; // or adjust path if it's in another file
 
 interface PreferencesSectionProps {
   user: {
@@ -61,16 +62,23 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
           sources: [value]
         });
       } else if (type === "languages") {
+        if (!isValidLanguage(value)) {
+          alert(`'${value}' is not a valid language. Please try again.`);
+          return;
+        }
+      
         const isoLanguage = convertToISO(value);
-        const displayLanguage = value.trim(); // Keep original for display
+        const displayLanguage = value.trim();
+      
         updatedList = [...languages, displayLanguage];
         setLanguages(updatedList);
         setUser({ ...user, languages: updatedList });
-        
+      
         await sendData(`/${userID}/languages`, "PUT", {
           languages: [isoLanguage]
         });
       }
+
 
       // Clear input field
       if (type === "locations") setNewLocation("");
