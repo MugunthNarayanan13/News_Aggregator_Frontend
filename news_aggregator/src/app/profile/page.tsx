@@ -11,6 +11,7 @@ import DangerZone from "@/components/DangerZone";
 import { BarChartIcon, BookmarkIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
 import ProfileSection from "@/components/ProfileSection";
 import SavedArticles from "@/components/SavedArticles";
+import FeedbackSection from "@/components/FeebackSection";
 interface UserData {
   name: string;
   email: string;
@@ -191,6 +192,8 @@ export default function UserProfile() {
               userID={userID} 
               setUser={setUser} 
             />
+
+            <FeedbackSection/>
 
             {/* Danger Zone */}
             <DangerZone userID={userID} />
