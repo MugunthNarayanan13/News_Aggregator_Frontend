@@ -8,10 +8,9 @@ import PreferencesSection from "@/components/PreferencesSection";
 import ReadStats from "@/components/ReadStats";
 import SecuritySection from "@/components/SecuritySection";
 import DangerZone from "@/components/DangerZone";
-import { BarChartIcon, SettingsIcon, UserCircleIcon, BookOpen } from "lucide-react";
+import { BarChartIcon, BookmarkIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
 import ProfileSection from "@/components/ProfileSection";
-import Link from "next/link";
-
+import SavedArticles from "@/components/SavedArticles";
 interface UserData {
   name: string;
   email: string;
@@ -162,6 +161,17 @@ export default function UserProfile() {
         >
           <BarChartIcon size={18} /> Reading Stats
         </button>
+        <button
+          onClick={() => setActiveTab("saved")}
+          className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-300 ${
+            activeTab === "saved"
+              ? "text-primary border-b-2 border-primary"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+        >
+          <BookmarkIcon size={18} /> Saved Articles
+        </button>
+
       </div>
 
       {/* Tab Content */}
@@ -184,16 +194,7 @@ export default function UserProfile() {
 
             {/* Danger Zone */}
             <DangerZone userID={userID} />
-            <div className="mt-6 text-center">
-              <Link href="/home">
-                <button className="px-4 py-2 bg-primary text-white rounded-md hover:bg-secondary transition-colors duration-300 shadow-sm hover:shadow flex items-center gap-2 mx-auto">
-                  <BookOpen size={16} />
-                  Find More Articles
-                </button>
-              </Link>
-            </div>
           </div>
-          
         )}
 
         {activeTab === "preferences" && (
@@ -206,7 +207,13 @@ export default function UserProfile() {
         {activeTab === "stats" && (
           <ReadStats user={user} totalArticles={totalArticles} />
         )}
+
+        {/* {activeTab === "saved" && (
+          <SavedArticles articles={} />
+        )} */}
+
       </div>
+      
     </div>
   );
 }
