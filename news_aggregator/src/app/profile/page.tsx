@@ -8,10 +8,15 @@ import PreferencesSection from "@/components/PreferencesSection";
 import ReadStats from "@/components/ReadStats";
 import SecuritySection from "@/components/SecuritySection";
 import DangerZone from "@/components/DangerZone";
-import { BarChartIcon, BookmarkIcon, SettingsIcon, UserCircleIcon } from "lucide-react";
+import { BarChartIcon, SettingsIcon, UserCircleIcon, BellIcon, CreditCardIcon } from "lucide-react";
 import ProfileSection from "@/components/ProfileSection";
-import SavedArticles from "@/components/SavedArticles";
+import { isValidLanguage } from "@/utils/isoConverterLang";
+import { convertCountryToISO } from "@/utils/isoConverterLoc";
+import SubscriptionsSection from "@/components/SubscriptionsSection";
 import FeedbackSection from "@/components/FeebackSection";
+import SavedArticles from "@/components/SavedArticles";
+
+
 interface UserData {
   name: string;
   email: string;
@@ -26,6 +31,7 @@ interface UserData {
   BusinessArticlesRead: number;
   TechnologyArticlesRead: number;
   GlobalArticlesRead: number;
+  subscriptionPlan?: string;
 }
 
 export default function UserProfile() {
@@ -46,6 +52,7 @@ export default function UserProfile() {
     BusinessArticlesRead: 0,
     TechnologyArticlesRead: 0,
     GlobalArticlesRead: 0,
+    subscriptionPlan: "free",
   });
   const [userID, setUserID] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -92,6 +99,7 @@ export default function UserProfile() {
         TechnologyArticlesRead: data.TechnologyArticlesRead,
         GlobalArticlesRead: data.GlobalArticlesRead,
         avatar: data.avatar != null ? data.avatar : "",
+        subscriptionPlan: data.subscriptionPlan || "free",
       });
       setUserID(data._id);
       localStorage.setItem("userID", data._id);
@@ -162,17 +170,17 @@ export default function UserProfile() {
         >
           <BarChartIcon size={18} /> Reading Stats
         </button>
+
         <button
-          onClick={() => setActiveTab("saved")}
+          onClick={() => setActiveTab("subscriptions")}
           className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-300 ${
-            activeTab === "saved"
+            activeTab === "subscriptions"
               ? "text-primary border-b-2 border-primary"
               : "text-gray-600 hover:text-gray-800"
           }`}
         >
-          <BookmarkIcon size={18} /> Saved Articles
+          <CreditCardIcon size={18} /> Subscriptions
         </button>
-
       </div>
 
       {/* Tab Content */}
@@ -200,23 +208,32 @@ export default function UserProfile() {
             </div>
         )}
 
-        {activeTab === "preferences" && (
-          <PreferencesSection 
-            user={user} 
-            setUser={setUser}
-          />
-        )}
+      {activeTab === "preferences" && (
+        <PreferencesSection 
+          user={user} 
+          setUser={setUser}
+          validationFunctions={{
+            validateLanguage: isValidLanguage,
+            validateLocation: (loc: string) => convertCountryToISO(loc) !== "Invalid location"
+          }}
+        />
+      )}
 
         {activeTab === "stats" && (
           <ReadStats user={user} totalArticles={totalArticles} />
         )}
 
-        {/* {activeTab === "saved" && (
-          <SavedArticles articles={} />
-        )} */}
+  {activeTab === "subscriptions" && (
+          <SubscriptionsSection user={user} setUser={setUser} />
+        )}
 
+        
+        
       </div>
       
+         
+
+
     </div>
   );
 }

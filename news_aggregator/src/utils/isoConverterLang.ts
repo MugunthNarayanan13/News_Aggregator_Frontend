@@ -1,4 +1,4 @@
-// language-utils.ts
+// Utility function to convert language names to ISO 639-1 two-letter codes
 
 export const languageToISO: Record<string, string> = {
   "english": "en",
@@ -77,31 +77,30 @@ export const languageToISO: Record<string, string> = {
   "hawaiian": "haw"
 };
 
-/**
- * Check if a string is a valid language
- */
 export function isValidLanguage(language: string | null | undefined): boolean {
   if (!language || typeof language !== "string") return false;
   const normalizedLang = language.toLowerCase().trim();
   return normalizedLang in languageToISO;
 }
-
-/**
- * Converts a language name to its ISO 639-1 code
- * Returns undefined if language is invalid or null
- */
-export function convertToISO(language: string | null | undefined): string | undefined {
-  if (!language || typeof language !== "string") return undefined;
-  const normalizedLang = language.toLowerCase().trim();
-  return isValidLanguage(normalizedLang) ? languageToISO[normalizedLang] : undefined;
-}
-
-/**
- * Converts an array of language names to ISO codes
- * Skips invalid/null values
- */
-export function convertLanguagesToISO(languages: (string | null | undefined)[]): string[] {
-  return languages
-    .map(lang => convertToISO(lang))
-    .filter((code): code is string => Boolean(code));
-}
+  
+  /**
+   * Converts a language name to its ISO 639-1 two-letter code
+   * @param language - The full language name (e.g., "english")
+   * @returns The ISO 639-1 code (e.g., "en") or the original string if not found
+   */
+  export function convertToISO(language: string | null | undefined): string | undefined {
+    if (!language || typeof language !== "string") return undefined;
+    const normalizedLang = language.toLowerCase().trim();
+    return isValidLanguage(normalizedLang) ? languageToISO[normalizedLang] : undefined;
+  }
+  
+  /**
+   * Converts an array of language names to their ISO 639-1 two-letter codes
+   * @param languages - Array of language names
+   * @returns Array of ISO 639-1 codes
+   */
+  export function convertLanguagesToISO(languages: (string | null | undefined)[]): string[] {
+    return languages
+      .map(lang => convertToISO(lang))
+      .filter((code): code is string => Boolean(code));
+  }
