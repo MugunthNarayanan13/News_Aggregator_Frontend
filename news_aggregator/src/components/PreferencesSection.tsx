@@ -18,6 +18,10 @@ interface PreferencesSectionProps {
     languages: string[];
   };
   setUser: (user: any) => void;
+  validationFunctions?: {
+    validateLanguage: (lang: string) => boolean;
+    validateLocation: (loc: string) => boolean;
+  };
 }
 
 export default function PreferencesSection({
@@ -72,6 +76,23 @@ export default function PreferencesSection({
 
     const userID = localStorage.getItem("userID");
     if (!userID) return;
+
+    // Add validation here
+      if (type === "languages") {
+        if (!isValidLanguage(value)) {
+          toast.error(`"${value}" is not a valid language.`);
+          setNewLanguage("");
+          return;
+        }
+      }
+      
+      if (type === "locations") {
+        if (convertCountryToISO(value) === "Invalid location") {
+          toast.error(`"${value}" is not a valid country name.`);
+          setNewLocation(""); 
+          return;
+        }
+      }
 
     try {
       let updatedList = [];
