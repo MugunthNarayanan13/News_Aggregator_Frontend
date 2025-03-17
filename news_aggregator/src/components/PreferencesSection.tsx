@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { Settings, RefreshCw,BookOpen } from "lucide-react";
+import { Settings, RefreshCw, BookOpen } from "lucide-react";
 import { sendData } from "@/utils/sendData";
 import { convertToISO } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
 import { isValidLanguage } from "@/utils/isoConverterLang";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { getCachedData, setCachedData } from "@/utils/fetchModule";
+import axios from "axios";
+import { allPublishersURL } from "@/utils/urls";
 
 interface PreferencesSectionProps {
   user: {
@@ -21,13 +24,19 @@ interface PreferencesSectionProps {
   };
 }
 
-export default function PreferencesSection({ user, setUser }: PreferencesSectionProps) {
+export default function PreferencesSection({
+  user,
+  setUser,
+}: PreferencesSectionProps) {
   // Preference states
   const [locations, setLocations] = useState(user.locations);
   const [sources, setSources] = useState(user.sources);
   const [languages, setLanguages] = useState(user.languages);
   const [newLocation, setNewLocation] = useState("");
-  const [newSource, setNewSource] = useState("");
+  const [publishers, setPublishers] = useState<{ id: string; name: string }[]>(
+    []
+  );
+  const [selectedPublisher, setSelectedPublisher] = useState<string>("");
   const [newLanguage, setNewLanguage] = useState("");
 
   // Update local state when user prop changes
@@ -35,6 +44,31 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
     setLocations(user.locations);
     setSources(user.sources);
     setLanguages(user.languages);
+    const fetchPublishers = async () => {
+      const cacheKey = "publishers_cache";
+      const cachedPublishers = getCachedData(cacheKey);
+      if (cachedPublishers) {
+        setPublishers(cachedPublishers);
+        return;
+      }
+
+      try {
+        const response = await axios.get(allPublishersURL(["in"], ["en"]));
+        if (response.data.status === "success") {
+          const publisherList = response.data.results.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+          }));
+
+          setPublishers(publisherList);
+          setCachedData(cacheKey, publisherList);
+        }
+      } catch (error) {
+        console.error("Error fetching publishers:", error);
+      }
+    };
+
+    fetchPublishers();
   }, [user]);
 
   const addPreference = async (type: string, value: string) => {
@@ -66,58 +100,69 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
       if (type === "locations") {
         const trimmedValue = value.trim();
         const isoLocation = convertCountryToISO(trimmedValue);
-      
+
         // Validate location
         if (!isoLocation || isoLocation === trimmedValue) {
           toast.warning("Invalid or unsupported location");
           return;
         }
-      
+
         // Check for duplicates
         if (locations.includes(isoLocation)) {
           toast.warning("Location already added");
           return;
         }
-      
+
         updatedList = [...locations, isoLocation];
         setLocations(updatedList);
         setUser({ ...user, locations: updatedList });
-      
+
         // Update locations in backend
         await sendData(`/${userID}/locations`, "PUT", {
-          locations: [isoLocation]
+          locations: [isoLocation],
         });
-      }
-       else if (type === "sources") {
+      } else if (type === "sources") {
+        if (!publishers.find((publisher) => publisher.id === value)) {
+          toast.warning("Invalid source selected");
+          return;
+        }
+
+        // Check for duplicates
+        if (sources.includes(value)) {
+          toast.warning("Source already added");
+          return;
+        }
+
         updatedList = [...sources, value];
         setSources(updatedList);
         setUser({ ...user, sources: updatedList });
+
         // Update sources in backend
         await sendData(`/${userID}/sources`, "PUT", {
-          sources: [value]
+          sources: [value],
         });
+        setSelectedPublisher("");
       } else if (type === "languages") {
         if (!isValidLanguage(value)) {
           alert(`'${value}' is not a valid language. Please try again.`);
           return;
         }
-      
+
         const isoLanguage = convertToISO(value);
         const displayLanguage = value.trim();
-      
+
         updatedList = [...languages, displayLanguage];
         setLanguages(updatedList);
         setUser({ ...user, languages: updatedList });
-      
+
         await sendData(`/${userID}/languages`, "PUT", {
-          languages: [isoLanguage]
+          languages: [isoLanguage],
         });
       }
 
-
       // Clear input field
       if (type === "locations") setNewLocation("");
-      else if (type === "sources") setNewSource("");
+      else if (type === "sources") setSelectedPublisher("");
       else if (type === "languages") setNewLanguage("");
     } catch (error) {
       console.error(`Error adding ${type}:`, error);
@@ -127,38 +172,47 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
   const removePreference = async (type: string, index: number) => {
     const userID = localStorage.getItem("userID");
     if (!userID) return;
+
     try {
       let updatedList = [];
-      let valueToRemove;
+      let valueToRemove: string | null | undefined;
 
       if (type === "locations") {
         valueToRemove = locations[index];
         updatedList = locations.filter((_, i) => i !== index);
         setLocations(updatedList);
         setUser({ ...user, locations: updatedList });
+
         const isoLocation = convertCountryToISO(valueToRemove);
         await sendData(`/${userID}/locations/remove`, "PUT", {
-          location: isoLocation
+          location: isoLocation,
         });
-
       } else if (type === "sources") {
         valueToRemove = sources[index];
+
+        if (!publishers.find((publisher) => publisher.id === valueToRemove)) {
+          toast.warning("Invalid source selected");
+          return;
+        }
+
         updatedList = sources.filter((_, i) => i !== index);
         setSources(updatedList);
         setUser({ ...user, sources: updatedList });
-        
-        
+
         await sendData(`/${userID}/sources/remove`, "PUT", {
-          source: valueToRemove
+          source: valueToRemove,
         });
+
+        setSelectedPublisher(""); // Clear dropdown selection after removal
       } else if (type === "languages") {
         valueToRemove = languages[index];
         updatedList = languages.filter((_, i) => i !== index);
         setLanguages(updatedList);
         setUser({ ...user, languages: updatedList });
+
         const isoLanguage = convertToISO(valueToRemove);
         await sendData(`/${userID}/languages/remove`, "PUT", {
-          language: isoLanguage
+          language: isoLanguage,
         });
       }
     } catch (error) {
@@ -174,14 +228,11 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
       setSources([]);
       setLanguages([]);
 
-      setUser({
-        ...user,
+      await sendData(`/${localStorage.getItem("userID")}/edit`, "PUT", {
         locations: [],
         sources: [],
         languages: [],
       });
-
-      toast.success("Preferences reset successfully");
     } catch (error) {
       console.error("Error resetting preferences:", error);
     }
@@ -261,9 +312,7 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
                 key={index}
                 className="flex items-center bg-green-100 rounded-full overflow-hidden shadow-sm hover:shadow transition-shadow duration-300"
               >
-                <span className="px-3 py-1 text-green-800">
-                  {location}
-                </span>
+                <span className="px-3 py-1 text-green-800">{location}</span>
                 <button
                   onClick={() => removePreference("locations", index)}
                   className="p-1 bg-green-200 text-green-800 hover:bg-green-300 transition-colors duration-300"
@@ -322,16 +371,24 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
           )}
         </div>
         <div className="flex mt-2">
-          <input
-            type="text"
-            value={newSource}
-            onChange={(e) => setNewSource(e.target.value)}
-            placeholder="Add a news source"
+          <select
+            value={selectedPublisher}
+            onChange={(e) => setSelectedPublisher(e.target.value)}
             className="flex-1 p-2 border border-gray-300 rounded-l-md focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-300"
-          />
+          >
+            <option value="" disabled>
+              Select a news source
+            </option>
+            {publishers.map((publisher) => (
+              <option key={publisher.id} value={publisher.id}>
+                {publisher.name}
+              </option>
+            ))}
+          </select>
           <button
-            onClick={() => addPreference("sources", newSource)}
+            onClick={() => addPreference("sources", selectedPublisher)}
             className="px-3 bg-primary text-white rounded-r-md hover:bg-secondary transition-colors duration-300"
+            disabled={!selectedPublisher} // Disable if nothing is selected
           >
             Add
           </button>
