@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Button } from "@heroui/react";
+import { Button } from "@heroui/button";
 import Main from "@/components/Main";
 import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
@@ -196,7 +196,7 @@ export default function HomePage() {
         onCategorySelect={scrollToSection} // Pass scrolling function to NavBar
       />
 
-      <div className="flex flex-col mx-4 mt-4 p-6 gap-6 dark:bg-foreground_dark text-black dark:text-white rounded-3xl">
+      <div className="flex flex-col mx-4 mt-4 p-6 gap-6 dark:bg-foreground_dark text-black dark:text-black rounded-3xl">
         <div ref={sectionRefs.local}>
           <NewsSection sectionTitle="Local News" categoryUrl={localNewsUrl} />
         </div>

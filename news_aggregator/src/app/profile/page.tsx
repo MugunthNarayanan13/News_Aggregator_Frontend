@@ -13,6 +13,7 @@ import ProfileSection from "@/components/ProfileSection";
 import { isValidLanguage } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
 import SubscriptionsSection from "@/components/SubscriptionsSection";
+import FeedbackSection from "@/components/FeebackSection";
 
 
 interface UserData {
@@ -184,7 +185,7 @@ export default function UserProfile() {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === "profile" && (
-          <div className="space-y-8">
+            <div className="space-y-8">
             {/* Profile Information */}
             <ProfileSection.Info 
               user={user} 
@@ -199,9 +200,11 @@ export default function UserProfile() {
               setUser={setUser} 
             />
 
+            <FeedbackSection/>
+
             {/* Danger Zone */}
-            <DangerZone userID={userID} />
-          </div>
+            <DangerZone userID={userID} username={user.name} />
+            </div>
         )}
 
       {activeTab === "preferences" && (
@@ -223,6 +226,7 @@ export default function UserProfile() {
           <SubscriptionsSection user={user} setUser={setUser} />
         )}
       </div>
+      
     </div>
   );
 }
