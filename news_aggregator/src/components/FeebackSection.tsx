@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { MessageCircle, SendHorizonal, Star, X } from "lucide-react";
 import { toast } from "react-toastify";
+import { sendData } from "@/utils/sendData";
 
 export default function FeedbackSection() {
   const [isGivingFeedback, setIsGivingFeedback] = useState(false);
@@ -18,15 +19,14 @@ export default function FeedbackSection() {
     }
 
     try {
-      // TODO: Replace with your API call / sendData
       const feedbackPayload = {
         feedbackType,
         feedbackMessage,
         rating,
       };
 
-      console.log("Feedback Submitted:", feedbackPayload);
-      toast.success("Thank you for your feedback!");
+      const res = await sendData(`/${localStorage.getItem("userID")}/feedback`, "PUT", feedbackPayload);
+      console.log("Feedback Submitted:", feedbackPayload, res);
 
       // Reset form
       setIsGivingFeedback(false);
@@ -96,9 +96,8 @@ export default function FeedbackSection() {
                 <Star
                   key={star}
                   onClick={() => setRating(star)}
-                  className={`cursor-pointer transition-all ${
-                    star <= rating ? "text-yellow-500 fill-yellow-400" : "text-gray-400"
-                  }`}
+                  className={`cursor-pointer transition-all ${star <= rating ? "text-yellow-500 fill-yellow-400" : "text-gray-400"
+                    }`}
                   size={24}
                 />
               ))}
