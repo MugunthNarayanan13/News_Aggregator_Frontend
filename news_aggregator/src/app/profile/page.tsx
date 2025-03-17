@@ -14,6 +14,7 @@ import { isValidLanguage } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
 import SubscriptionsSection from "@/components/SubscriptionsSection";
 import FeedbackSection from "@/components/FeebackSection";
+import SavedArticles from "@/components/SavedArticles";
 
 
 interface UserData {
@@ -225,8 +226,14 @@ export default function UserProfile() {
   {activeTab === "subscriptions" && (
           <SubscriptionsSection user={user} setUser={setUser} />
         )}
+
+        
+        
       </div>
       
+         
+
+
     </div>
   );
 }

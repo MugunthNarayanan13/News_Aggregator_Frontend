@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NewsCardBigProps } from "./NewsCardBig";
 
 export interface SavedArticlesProps {
