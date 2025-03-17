@@ -6,13 +6,19 @@ import { sendData } from "@/utils/sendData";
 
 interface DangerZoneSectionProps {
   userID: any;
+  username: string; // Add username to props
 }
 
-export default function DangerZoneSection({ userID }: DangerZoneSectionProps) {
+export default function DangerZoneSection({ userID, username }: DangerZoneSectionProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [inputUsername, setInputUsername] = useState("");
   const router = useRouter();
 
   const handleDeleteAccount = async () => {
+    if (username !== inputUsername) {
+      alert("Username does not match. Please enter your correct username.");
+      return;
+    }
     try {
       const response = await sendData(`/${userID}`, "DELETE");
       if (response.status === 200) {
@@ -39,10 +45,20 @@ export default function DangerZoneSection({ userID }: DangerZoneSectionProps) {
       </button>
       {isDeleting && (
         <div className="mt-4 p-4 bg-white border border-red-300 rounded-md shadow-sm">
-          <p className="text-red-600">
+            <p className="text-red-600">
             Are you sure you want to delete your account? This action
             cannot be undone.
-          </p>
+            </p>
+            <p className="text-red-600">
+            Please enter your username to confirm.
+            </p>
+            <input
+            type="text"
+            placeholder={username}
+            value={inputUsername}
+            onChange={(e) => setInputUsername(e.target.value)}
+            className="mt-2 p-2 border border-gray-300 rounded-md w-full"
+            />
           <div className="flex gap-2 mt-3">
             <button
               onClick={handleDeleteAccount}
