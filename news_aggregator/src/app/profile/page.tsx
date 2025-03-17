@@ -178,7 +178,7 @@ export default function UserProfile() {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === "profile" && (
-          <div className="space-y-8">
+            <div className="space-y-8">
             {/* Profile Information */}
             <ProfileSection.Info 
               user={user} 
@@ -196,8 +196,8 @@ export default function UserProfile() {
             <FeedbackSection/>
 
             {/* Danger Zone */}
-            <DangerZone userID={userID} />
-          </div>
+            <DangerZone userID={userID} username={user.name} />
+            </div>
         )}
 
         {activeTab === "preferences" && (
