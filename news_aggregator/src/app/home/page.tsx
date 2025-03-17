@@ -1,6 +1,4 @@
-
 /* eslint-disable react-hooks/exhaustive-deps */
-
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
@@ -20,10 +18,12 @@ import {
   baseURL,
   addTimeframeURL,
   addExcludeKeyWordURL,
+  addRegionWiseURL,
 } from "@/utils/urls";
 import { NewsSectionSearch } from "@/components/NewsSectionSearch";
 import { NewsCardBigProps } from "@/components/NewsCardBig";
 import getLocationData from "@/utils/locationRequest";
+import { sendData } from "@/utils/sendData";
 
 export default function HomePage() {
   const [isBottomDivExpanded, setIsBottomDivExpanded] = useState(false);
@@ -34,6 +34,9 @@ export default function HomePage() {
   const [searchText, setSearchText] = useState<string>("");
   const [timeframe, setTimeframe] = useState<string>("");
   const [excludeText, setExcludeText] = useState<string>("");
+  const [userPref, setUserPref] = useState(
+    JSON.parse(localStorage.getItem("user") || "")
+  );
 
   // Refs for each section
   const sectionRefs = {
@@ -48,38 +51,76 @@ export default function HomePage() {
 
   // State for each category URL
   const [localNewsUrl, setLocalNewsUrl] = useState(() =>
-    addLanguageWiseURL(baseURL, ["en", "hi"])
+    // userPref != "" && userPref.locations.length != 0
+    //   ? addRegionWiseURL(
+    //       addLanguageWiseURL(
+    //         baseURL,
+    //         userPref != "" ? userPref.languages : ["en", "hi"]
+    //       ),
+    //       userPref.locations
+    //     )
+    //   : addLanguageWiseURL(
+    //       baseURL,
+    //       userPref != "" ? userPref.languages : ["en", "hi"]
+    //     )
+    addLanguageWiseURL(
+      baseURL,
+      userPref != "" ? userPref.languages : ["en", "hi"]
+    )
   );
   const [worldNewsUrl, setWorldNewsUrl] = useState(() =>
-    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["world"]), ["en", "hi"])
+    userPref != "" && userPref.sources.length != 0
+      ? addPublisherWiseURL(
+          addLanguageWiseURL(
+            addCategoryWiseURL(baseURL, ["world"]),
+            userPref != "" ? userPref.languages : ["en", "hi"]
+          ),
+          userPref.sources
+        )
+      : addLanguageWiseURL(
+          addCategoryWiseURL(baseURL, ["world"]),
+          userPref != "" ? userPref.languages : ["en", "hi"]
+        )
   );
   const [politicsNewsUrl, setPoliticsNewsUrl] = useState(() =>
-    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["politics"]), ["en", "hi"])
+    addLanguageWiseURL(
+      addCategoryWiseURL(baseURL, ["politics"]),
+      userPref != "" ? userPref.languages : ["en", "hi"]
+    )
   );
   const [technologyNewsUrl, setTechnologyNewsUrl] = useState(() =>
-    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["technology"]), [
-      "en",
-      "hi",
-    ])
+    addLanguageWiseURL(
+      addCategoryWiseURL(baseURL, ["technology"]),
+      userPref != "" ? userPref.languages : ["en", "hi"]
+    )
   );
   const [businessNewsUrl, setBusinessNewsUrl] = useState(() =>
-    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["business"]), ["en", "hi"])
+    addLanguageWiseURL(
+      addCategoryWiseURL(baseURL, ["business"]),
+      userPref != "" ? userPref.languages : ["en", "hi"]
+    )
   );
   const [sportsNewsUrl, setSportsNewsUrl] = useState(() =>
-    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["sports"]), ["en", "hi"])
+    addLanguageWiseURL(
+      addCategoryWiseURL(baseURL, ["sports"]),
+      userPref != "" ? userPref.languages : ["en", "hi"]
+    )
   );
   const [entertainmentNewsUrl, setEntertainmentNewsUrl] = useState(() =>
-    addLanguageWiseURL(addCategoryWiseURL(baseURL, ["entertainment"]), [
-      "en",
-      "hi",
-    ])
+    addLanguageWiseURL(
+      addCategoryWiseURL(baseURL, ["entertainment"]),
+      userPref != "" ? userPref.languages : ["en", "hi"]
+    )
   );
 
   // Function to scroll to the selected section
   const scrollToSection = (section: keyof typeof sectionRefs) => {
     sectionRefs[section]?.current?.scrollIntoView({ behavior: "smooth" });
   };
-  const [location, setLocation] = useState<{ country: string; region: string } | null>(null);
+  const [location, setLocation] = useState<{
+    country: string;
+    region: string;
+  } | null>(null);
 
   const onSearchSubmit = async () => {
     setIsSearchModalOpen(true);
@@ -87,7 +128,10 @@ export default function HomePage() {
     const newsData = await fetchNewsOnlyBig(
       addExcludeKeyWordURL(
         addKeyWordSearchURL(
-          addLanguageWiseURL(baseURL, ["en", "hi"]),
+          addLanguageWiseURL(
+            baseURL,
+            userPref != "" ? userPref.languages : ["en", "hi"]
+          ),
           searchText
         ),
         excludeText
@@ -106,9 +150,13 @@ export default function HomePage() {
     if (publishers != null) {
       setIsPubModalOpen(true);
       const newsData = await fetchNewsOnlyBig(
-        addPublisherWiseURL(addLanguageWiseURL(baseURL, ["en", "hi"]), [
-          publishers,
-        ])
+        addPublisherWiseURL(
+          addLanguageWiseURL(
+            baseURL,
+            userPref != "" ? userPref.languages : ["en", "hi"]
+          ),
+          [publishers]
+        )
       );
       if (!newsData) {
         console.log("No news data for publisher search result");
@@ -136,12 +184,13 @@ export default function HomePage() {
           setLocation(locationData);
         }
       } catch (err) {
-        console.log("Unable to fetch location. You may have denied the location permission.");
+        console.log(
+          "Unable to fetch location. You may have denied the location permission."
+        );
       }
     };
 
     fetchLocation();
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -238,6 +287,4 @@ export default function HomePage() {
       </div>
     </Main>
   );
-
 }
-
