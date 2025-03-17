@@ -14,6 +14,7 @@ export interface NewsCardSmallProps {
   pubDateTZ: string;
   className?: string;
   link: string;
+  notInterestedHandler: (linkUrl: string) => void;
 }
 
 const truncateText = (text: string, maxLength: number) => {
@@ -42,24 +43,30 @@ const handleNewsClick = (link: string) => {
   }
 };
 
-export default function NewsCardSmall({
-  title,
-  desc,
-  pubDate,
-  pubName,
-  pubLogo,
-  sentiment,
-  pubDateTZ,
-  className = "",
-  link,
-}: NewsCardSmallProps) {
+export default function NewsCardSmall(
+  {
+    title,
+    desc,
+    pubDate,
+    pubName,
+    pubLogo,
+    sentiment,
+    pubDateTZ,
+    className = "",
+    link,
+    notInterestedHandler,
+  }: NewsCardSmallProps,
+) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     }
@@ -107,6 +114,16 @@ export default function NewsCardSmall({
                   className="w-full text-left px-4 py-2 hover:bg-gray-100"
                   onClick={(e) => {
                     e.stopPropagation();
+                    notInterestedHandler(link);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  Not Intrested
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     alert("Subscribe to Source clicked");
                     setDropdownOpen(false);
                   }}
@@ -140,7 +157,9 @@ export default function NewsCardSmall({
             className="text-white hover:opacity-80 transition px-2"
           >
             <BookmarkIcon
-              className={`w-5 h-5 ${isBookmarked ? "fill-white stroke-white" : "stroke-white"}`}
+              className={`w-5 h-5 ${
+                isBookmarked ? "fill-white stroke-white" : "stroke-white"
+              }`}
             />
           </button>
 
