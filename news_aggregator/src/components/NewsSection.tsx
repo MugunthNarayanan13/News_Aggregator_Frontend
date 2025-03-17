@@ -6,7 +6,7 @@ import type { NewsCardSmallProps } from "@/components/NewsCardSmall";
 import type { NewsCardBigProps } from "@/components/NewsCardBig";
 import NewsCardSmall from "@/components/NewsCardSmall";
 import NewsCardBig from "@/components/NewsCardBig";
-import { fetchNews } from "@/utils/fetchModule";
+import { fetchNews, getCachedData, setCachedData } from "@/utils/fetchModule";
 import { sendData } from "@/utils/sendData";
 
 interface NewsSectionProps {
@@ -40,15 +40,31 @@ export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
+  const notIntrestedHandler = (link: string) => {
+    setNewsState((prevState) => ({
+      ...prevState,
+      smallNews: prevState.smallNews.filter((news) => news.link !== link),
+    }));
+    const cacheKey = `news_${categoryUrl}`;
+    const cachedData = getCachedData(cacheKey);
+    if (cachedData) {
+      const updatedCache = [
+        cachedData[0], // Keep the bigNews unchanged
+        cachedData[1].filter((news: NewsCardSmallProps) => news.link !== link), // Update smallNews
+      ];
+      setCachedData(cacheKey, updatedCache);
+    }
+  };
+
   const handleNewsClick = async () => {
     console.log("Section Title", sectionTitle);
     switch (sectionTitle) {
-      case ("World News"):
+      case "World News":
         await sendData(`/${localStorage.getItem("userID")}/articles`, "PUT", {
           articleType: "GlobalArticlesRead",
         });
         break;
-      case ("Local News"):
+      case "Local News":
         await sendData(`/${localStorage.getItem("userID")}/articles`, "PUT", {
           articleType: "GlobalArticlesRead",
         });
@@ -192,7 +208,10 @@ export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
                     className="bg-white rounded-lg shadow-md h-full flex flex-col"
                     onClick={handleNewsClick}
                   >
-                    <NewsCardSmall {...news} />
+                    <NewsCardSmall
+                      {...news}
+                      notInterestedHandler={notIntrestedHandler}
+                    />
                   </div>
                 </div>
               ))}

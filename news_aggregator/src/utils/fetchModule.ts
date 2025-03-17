@@ -128,6 +128,7 @@ const fetchNews = async (url: string): Promise<[NewsCardBigProps, NewsCardSmallP
                 sentiment: news.sentiment,
                 pubDateTZ: news.pubDateTZ,
                 link: news.link,
+                notInterestedHandler: ()=>{}
             }));
 
         const result = [selectedBigNews, remainingSmallNews];

@@ -82,7 +82,6 @@ export default function HomePage() {
   const [location, setLocation] = useState<{ country: string; region: string } | null>(null);
 
   const onSearchSubmit = async () => {
-    console.log("Hello ", searchText, excludeText);
     setIsSearchModalOpen(true);
 
     const newsData = await fetchNewsOnlyBig(
