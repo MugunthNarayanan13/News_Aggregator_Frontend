@@ -4,6 +4,8 @@ import { Settings, RefreshCw } from "lucide-react";
 import { sendData } from "@/utils/sendData";
 import { convertToISO } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
+import { isValidLanguage } from "@/utils/isoConverterLang";
+import { toast } from "react-toastify";
 
 interface PreferencesSectionProps {
   user: {
@@ -12,6 +14,10 @@ interface PreferencesSectionProps {
     languages: string[];
   };
   setUser: (user: any) => void;
+  validationFunctions?: {
+    validateLanguage: (lang: string) => boolean;
+    validateLocation: (loc: string) => boolean;
+  };
 }
 
 export default function PreferencesSection({ user, setUser }: PreferencesSectionProps) {
@@ -35,6 +41,23 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
 
     const userID = localStorage.getItem("userID");
     if (!userID) return;
+
+    // Add validation here
+      if (type === "languages") {
+        if (!isValidLanguage(value)) {
+          toast.error(`"${value}" is not a valid language.`);
+          setNewLanguage("");
+          return;
+        }
+      }
+      
+      if (type === "locations") {
+        if (convertCountryToISO(value) === "Invalid location") {
+          toast.error(`"${value}" is not a valid country name.`);
+          setNewLocation(""); 
+          return;
+        }
+      }
 
     try {
       let updatedList = [];
@@ -138,7 +161,7 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
         languages: [],
       });
 
-      alert("Preferences reset successfully");
+      toast.success("Preferences reset successfully");
     } catch (error) {
       console.error("Error resetting preferences:", error);
     }

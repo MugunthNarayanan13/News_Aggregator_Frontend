@@ -65,14 +65,30 @@ const countryCodeMap: Record<string, string> = {
     "venezuela": "ve"
   };
   
-  /**
-   * Converts a country name to its ISO 3166-1 alpha-2 code
-   * @param countryName The name of the country
-   * @returns The ISO code, or original string if not found
-   */
-  export const convertCountryToISO = (countryName: string): string => {
-    const normalizedName = countryName.trim().toLowerCase();
-    return countryCodeMap[normalizedName] || normalizedName;
-  };
-  
-  export default convertCountryToISO;
+/**
+ * Checks if the input is a valid country name
+ * @param input The user input
+ * @returns Boolean indicating if it's a valid country
+ */
+const isValidCountry = (input: string): boolean => {
+  // Check if the input exists in the country code map
+  return Object.keys(countryCodeMap).includes(input);
+};
+
+/**
+ * Converts a country name to its ISO 3166-1 alpha-2 code
+ * @param countryName The name of the country
+ * @returns The ISO code, or "Invalid location" if not found
+ */
+export const convertCountryToISO = (countryName: string): string => {
+  const normalizedName = countryName.trim().toLowerCase();
+
+  // Reject input if it contains non-country related words
+  if (!isValidCountry(normalizedName)) {
+    return "Invalid location";
+  }
+
+  return countryCodeMap[normalizedName];
+};
+
+export default convertCountryToISO;

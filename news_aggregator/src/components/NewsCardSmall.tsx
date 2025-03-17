@@ -2,6 +2,8 @@
 /* eslint-disable @next/next/no-img-element */
 import { timeAgo } from "@/utils/dateFormatter";
 import { ShareIcon } from "@heroicons/react/24/outline";
+import { BellIcon, BellSlashIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 export interface NewsCardSmallProps {
   title: string;
@@ -13,13 +15,16 @@ export interface NewsCardSmallProps {
   pubDateTZ: string;
   className?: string;
   link: string;
+  isSubscribed?: boolean;
+  onToggleSubscription?: (pubName: string, subscribed: boolean) => void;
 }
 
 const truncateText = (text: string, maxLength: number) => {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
-const shareNews = async (url: string) => {
+const shareNews = async (url: string, e: React.MouseEvent) => {
+  e.stopPropagation(); // Prevent card click
   if (navigator.share) {
     try {
       await navigator.share({
@@ -51,12 +56,28 @@ export default function NewsCardSmall({
   pubDateTZ,
   className = "",
   link,
+  isSubscribed = false,
+  onToggleSubscription,
 }: NewsCardSmallProps) {
+  // Local state for subscription status (will be overridden by props if provided)
+  const [subscribed, setSubscribed] = useState(isSubscribed);
+
+  const handleSubscribeToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    const newSubscriptionStatus = !subscribed;
+    setSubscribed(newSubscriptionStatus);
+    
+    // Call parent handler if provided
+    if (onToggleSubscription) {
+      onToggleSubscription(pubName, newSubscriptionStatus);
+    }
+  };
+
   return (
     <div className={className}>
       <div className="flex flex-col font-roboto bg-background_light rounded-[15px] h-[175px] w-full justify-between cursor-pointer">
         <div
-          className="flex flex-col  p-3"
+          className="flex flex-col p-3"
           onClick={() => handleNewsClick(link)}
         >
           <div className="line-clamp-3 font-normal text-xs md:text-sm lg:text-base mb-2">
@@ -78,9 +99,22 @@ export default function NewsCardSmall({
             {pubName}
           </div>
 
+          {/* Subscribe Bell Button */}
+          <button
+            onClick={handleSubscribeToggle}
+            className="px-2 text-white hover:opacity-80 transition"
+            title={subscribed ? "Unsubscribe" : "Subscribe"}
+          >
+            {subscribed ? (
+              <BellIcon className="w-5 h-5 text-yellow-300" />
+            ) : (
+              <BellSlashIcon className="w-5 h-5" />
+            )}
+          </button>
+
           {/* Share Button */}
           <button
-            onClick={() => shareNews(link)}
+            onClick={(e) => shareNews(link, e)}
             className="px-4 text-white hover:opacity-80 transition"
           >
             <ShareIcon className="w-5 h-5" />

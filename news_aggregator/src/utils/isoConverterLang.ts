@@ -1,5 +1,4 @@
 // Utility function to convert language names to ISO 639-1 two-letter codes
-// This is needed for News API which requires ISO language codes
 
 export const languageToISO: Record<string, string> = {
     // Widely spoken world languages
@@ -79,15 +78,21 @@ export const languageToISO: Record<string, string> = {
     "hawaiian": "haw"
 };
 
+export function isValidLanguage(language: string | null | undefined): boolean {
+  if (!language || typeof language !== "string") return false;
+  const normalizedLang = language.toLowerCase().trim();
+  return normalizedLang in languageToISO;
+}
   
   /**
    * Converts a language name to its ISO 639-1 two-letter code
    * @param language - The full language name (e.g., "english")
    * @returns The ISO 639-1 code (e.g., "en") or the original string if not found
    */
-  export function convertToISO(language: string): string {
+  export function convertToISO(language: string | null | undefined): string | undefined {
+    if (!language || typeof language !== "string") return undefined;
     const normalizedLang = language.toLowerCase().trim();
-    return languageToISO[normalizedLang] || normalizedLang;
+    return isValidLanguage(normalizedLang) ? languageToISO[normalizedLang] : undefined;
   }
   
   /**
@@ -95,6 +100,8 @@ export const languageToISO: Record<string, string> = {
    * @param languages - Array of language names
    * @returns Array of ISO 639-1 codes
    */
-  export function convertLanguagesToISO(languages: string[]): string[] {
-    return languages.map(lang => convertToISO(lang));
+  export function convertLanguagesToISO(languages: (string | null | undefined)[]): string[] {
+    return languages
+      .map(lang => convertToISO(lang))
+      .filter((code): code is string => Boolean(code));
   }

@@ -2,6 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { timeAgo } from "@/utils/dateFormatter";
 import { ShareIcon } from "@heroicons/react/24/outline";
+import { BellIcon, BellSlashIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
+
 export interface NewsCardBigProps {
   title: string;
   desc: string;
@@ -12,6 +15,8 @@ export interface NewsCardBigProps {
   imgUrl: string;
   sentiment: string;
   link: string;
+  isSubscribed?: boolean;
+  onToggleSubscription?: (pubName: string, subscribed: boolean) => void;
 }
 
 const truncateText = (text: string, maxLength: number) => {
@@ -19,7 +24,8 @@ const truncateText = (text: string, maxLength: number) => {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
-const shareNews = async (url: string) => {
+const shareNews = async (url: string, e: React.MouseEvent) => {
+  e.stopPropagation(); // Prevent card click
   if (navigator.share) {
     try {
       await navigator.share({
@@ -50,12 +56,28 @@ export default function NewsCardBig({
   pubLogo,
   sentiment,
   imgUrl,
-  link, // Get news link
+  link,
+  isSubscribed = false,
+  onToggleSubscription,
 }: NewsCardBigProps) {
+  // Local state for subscription status (will be overridden by props if provided)
+  const [subscribed, setSubscribed] = useState(isSubscribed);
+
+  const handleSubscribeToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click
+    const newSubscriptionStatus = !subscribed;
+    setSubscribed(newSubscriptionStatus);
+    
+    // Call parent handler if provided
+    if (onToggleSubscription) {
+      onToggleSubscription(pubName, newSubscriptionStatus);
+    }
+  };
+
   return (
     <div>
       <div
-        className="flex flex-col font-roboto sm:w-[250px] md:w-[280px] lg:w-[320px] sm:h-[280px] md:h-[320px] lg:h-[360px] border-2 border-none bg-background_light rounded-[15px] mb-0  cursor-pointer"
+        className="flex flex-col font-roboto sm:w-[250px] md:w-[280px] lg:w-[320px] sm:h-[280px] md:h-[320px] lg:h-[360px] border-2 border-none bg-background_light rounded-[15px] mb-0 cursor-pointer"
         onClick={() => handleNewsClick(link)}
       >
         <div className="bg-secondary flex-1 m-2 rounded-lg overflow-hidden">
@@ -92,9 +114,22 @@ export default function NewsCardBig({
             {pubName}
           </div>
 
+          {/* Subscribe Bell Button */}
+          <button
+            onClick={handleSubscribeToggle}
+            className="px-2 text-white hover:opacity-80 transition"
+            title={subscribed ? "Unsubscribe" : "Subscribe"}
+          >
+            {subscribed ? (
+              <BellIcon className="w-5 h-5 text-yellow-300" />
+            ) : (
+              <BellSlashIcon className="w-5 h-5" />
+            )}
+          </button>
+
           {/* Share Button */}
           <button
-            onClick={() => shareNews(link)}
+            onClick={(e) => shareNews(link, e)}
             className="px-4 text-white hover:opacity-80 transition"
           >
             <ShareIcon className="w-5 h-5" />
