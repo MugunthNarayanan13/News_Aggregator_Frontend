@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-wrapper-object-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -16,7 +17,6 @@ import SubscriptionsSection from "@/components/SubscriptionsSection";
 import FeedbackSection from "@/components/FeebackSection";
 import SavedArticles from "@/components/SavedArticles";
 
-
 interface UserData {
   name: string;
   email: string;
@@ -31,7 +31,9 @@ interface UserData {
   BusinessArticlesRead: number;
   TechnologyArticlesRead: number;
   GlobalArticlesRead: number;
+  GlobalRanking: number;
   subscriptionPlan?: string;
+  _id: string;
 }
 
 export default function UserProfile() {
@@ -53,8 +55,10 @@ export default function UserProfile() {
     TechnologyArticlesRead: 0,
     GlobalArticlesRead: 0,
     subscriptionPlan: "free",
+    GlobalRanking: 0,
+    _id: "",
   });
-  const [userID, setUserID] = useState();
+  const [userID, setUserID] = useState<String>();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("profile");
   const [avatarUrl, setAvatarUrl] = useState("");
@@ -80,29 +84,62 @@ export default function UserProfile() {
     const loggedIn = localStorage.getItem("isLoggedIn");
     if (loggedIn == "0" || !loggedIn) router.replace("/");
     const fetchUserDetails = async () => {
-      const { data } = await sendData(
-        `/${localStorage.getItem("email")}`,
-        "GET"
-      );
-      console.log("Profile data: ", data);
-      setUser({
-        name: data.name,
-        password: data.password,
-        email: data.email,
-        locations: data.locations,
-        sources: data.sources,
-        languages: data.languages,
-        EntertainmentArticlesRead: data.EntertainmentArticlesRead,
-        SportsArticlesRead: data.SportsArticlesRead,
-        PoliticalArticlesRead: data.PoliticalArticlesRead,
-        BusinessArticlesRead: data.BusinessArticlesRead,
-        TechnologyArticlesRead: data.TechnologyArticlesRead,
-        GlobalArticlesRead: data.GlobalArticlesRead,
-        avatar: data.avatar != null ? data.avatar : "",
-        subscriptionPlan: data.subscriptionPlan || "free",
-      });
-      setUserID(data._id);
-      localStorage.setItem("userID", data._id);
+      let data: UserData | null = null;
+      try {
+        const response = await sendData(
+          `/${localStorage.getItem("email")}`,
+          "GET"
+        );
+        data = response.data;
+
+        // Update localStorage with the latest user data
+        localStorage.setItem("user", JSON.stringify(data));
+
+        console.log("Fetched user data from backend:", data);
+      } catch (error) {
+        console.error("Error fetching user data from backend:", error);
+
+        // If backend fails, fallback to localStorage
+        const dataString = localStorage.getItem("user");
+        if (dataString) {
+          try {
+            data = JSON.parse(dataString) as UserData;
+            console.log("Using fallback user data from localStorage:", data);
+          } catch (parseError) {
+            console.error(
+              "Error parsing fallback localStorage data:",
+              parseError
+            );
+          }
+        }
+      }
+      if (data) {
+        console.log("Profile data: ", data);
+
+        setUser({
+          name: data.name || "",
+          password: data.password || "",
+          email: data.email || "",
+          locations: data.locations || [],
+          sources: data.sources || [],
+          languages: data.languages || [],
+          EntertainmentArticlesRead: data.EntertainmentArticlesRead || 0,
+          SportsArticlesRead: data.SportsArticlesRead || 0,
+          PoliticalArticlesRead: data.PoliticalArticlesRead || 0,
+          BusinessArticlesRead: data.BusinessArticlesRead || 0,
+          TechnologyArticlesRead: data.TechnologyArticlesRead || 0,
+          GlobalArticlesRead: data.GlobalArticlesRead || 0,
+          avatar: data.avatar ?? "", // Handle null avatars
+          subscriptionPlan: data.subscriptionPlan || "free",
+          _id: data._id || "",
+          GlobalRanking: data.GlobalRanking || 0,
+        });
+
+        setUserID(data._id || "");
+        localStorage.setItem("userID", data._id || "");
+      } else {
+        console.error("Data is null or undefined");
+      }
     };
     fetchUserDetails();
   }, [router]);
@@ -131,11 +168,11 @@ export default function UserProfile() {
       </div>
 
       {/* Profile Header */}
-      <ProfileSection 
-        user={user} 
-        avatarUrl={avatarUrl} 
-        handleLogout={handleLogout} 
-        totalArticles={totalArticles} 
+      <ProfileSection
+        user={user}
+        avatarUrl={avatarUrl}
+        handleLogout={handleLogout}
+        totalArticles={totalArticles}
       />
 
       {/* Tab Navigation */}
@@ -195,43 +232,43 @@ export default function UserProfile() {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === "profile" && (
-            <div className="space-y-8">
+          <div className="space-y-8">
             {/* Profile Information */}
-            <ProfileSection.Info 
-              user={user} 
-              userID={userID} 
-              setUser={setUser} 
+            <ProfileSection.Info
+              user={user}
+              userID={userID}
+              setUser={setUser}
             />
 
             {/* Security Section */}
-            <SecuritySection 
-              user={user} 
-              userID={userID} 
-              setUser={setUser} 
-            />
+            <SecuritySection user={user} userID={userID} setUser={setUser} />
 
-            <FeedbackSection/>
+            <FeedbackSection />
 
             {/* Danger Zone */}
             <DangerZone userID={userID} username={user.name} />
-            </div>
+          </div>
         )}
 
-      {activeTab === "preferences" && (
-        <PreferencesSection 
-          user={user} 
-          setUser={setUser}
-          validationFunctions={{
-            validateLanguage: isValidLanguage,
-            validateLocation: (loc: string) => convertCountryToISO(loc) !== "Invalid location"
-          }}
-        />
-      )}
+        {activeTab === "preferences" && (
+          <PreferencesSection
+            user={user}
+            setUser={setUser}
+            validationFunctions={{
+              validateLanguage: isValidLanguage,
+              validateLocation: (loc: string) =>
+                convertCountryToISO(loc) !== "Invalid location",
+            }}
+          />
+        )}
 
         {activeTab === "stats" && (
-          <ReadStats user={user} totalArticles={totalArticles} />
+          <ReadStats
+            user={user}
+            totalArticles={totalArticles}
+            globalRanking={user.GlobalRanking}
+          />
         )}
-
         {activeTab === "saved-articles" && (
           <SavedArticles />
         )}

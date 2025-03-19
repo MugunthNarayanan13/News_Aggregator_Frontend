@@ -30,30 +30,30 @@ export default function LoginPage() {
       return;
     }
 
-    const {data} = await sendData("/login", "POST", { email, password });
+    const { data } = await sendData("/login", "POST", { email, password });
 
     // Simulate login success
     console.log("Logging in with:", email, password, data);
     setError("");
 
-    // Redirect to /home after successful 
-    if(data && data.message == "Login successful") {
+    // Redirect to /home after successful
+    if (data && data.message == "Login successful") {
       localStorage.setItem("isLoggedIn", "1");
       localStorage.setItem("email", email);
+      localStorage.setItem("user", JSON.stringify(data.user));
       router.push("/home");
     }
   };
 
   const handleGuestLogin = () => {
-    router.push('/home');
+    router.push("/home");
   };
 
-  useEffect(()=>{ 
-    if(localStorage.getItem("isLoggedIn") == "1"){
+  useEffect(() => {
+    if (localStorage.getItem("isLoggedIn") == "1") {
       router.push("/home");
     }
-  },[])
-
+  }, []);
 
   return (
     <>

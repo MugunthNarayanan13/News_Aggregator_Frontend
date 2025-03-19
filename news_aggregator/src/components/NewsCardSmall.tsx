@@ -18,6 +18,7 @@ export interface NewsCardSmallProps {
   className?: string;
   link: string;
   isBookmarked?: boolean;
+  notInterestedHandler: (linkUrl: string) => void;
 }
 
 const truncateText = (text: string, maxLength: number) => {
@@ -45,6 +46,7 @@ const handleNewsClick = (link: string) => {
     window.location.href = link;
   }
 };
+
 
 export default function NewsCardSmall({
   title,
@@ -76,7 +78,10 @@ export default function NewsCardSmall({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     }
