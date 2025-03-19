@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
+import { articleService } from "@/utils/articleService";
 import { timeAgo } from "@/utils/dateFormatter";
-import { ShareIcon, BookmarkIcon } from "@heroicons/react/24/outline";
 import { useState, useRef, useEffect } from "react";
+import { toast } from "react-toastify";
+import { ShareIcon, BookmarkIcon as OutlineBookmarkIcon } from "@heroicons/react/24/outline";
+import { BookmarkIcon as SolidBookmarkIcon } from "@heroicons/react/24/solid";
 
 export interface NewsCardSmallProps {
   title: string;
@@ -14,6 +17,7 @@ export interface NewsCardSmallProps {
   pubDateTZ: string;
   className?: string;
   link: string;
+  isBookmarked?: boolean;
 }
 
 const truncateText = (text: string, maxLength: number) => {
@@ -52,10 +56,23 @@ export default function NewsCardSmall({
   pubDateTZ,
   className = "",
   link,
+  isBookmarked: initialBookmarked = false,
 }: NewsCardSmallProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+
+  // Initialize bookmark state from localStorage/service
+    useEffect(() => {
+      const checkBookmarkStatus = () => {
+        const isBookmarked = articleService.isArticleBookmarked(link);
+        setIsBookmarked(isBookmarked);
+      };
+      
+      checkBookmarkStatus();
+    }, [link]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -75,11 +92,24 @@ export default function NewsCardSmall({
     setDropdownOpen((prev) => !prev);
   };
 
-  const handleBookmark = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsBookmarked((prev) => !prev);
-    alert(`News ${!isBookmarked ? "saved" : "removed"} from bookmarks.`);
-  };
+  const handleBookmark = async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      
+      try {
+        setIsSaving(true);
+        await articleService.saveArticle({
+          title, link,
+          url: undefined
+        });
+        setIsBookmarked(true);
+        toast.success("Article saved successfully");
+      } catch (error) {
+        console.error("Error saving article:", error);
+        toast.error("Failed to save article");
+      } finally {
+        setIsSaving(false);
+      }
+    };
 
   return (
     <div className={className}>
@@ -134,14 +164,17 @@ export default function NewsCardSmall({
             {pubName}
           </div>
 
-          {/* Bookmark Icon */}
           <button
             onClick={handleBookmark}
-            className="text-white hover:opacity-80 transition px-2"
+            className="px-2 text-white hover:opacity-80 transition"
+            title="Save for Later"
+            disabled={isSaving}
           >
-            <BookmarkIcon
-              className={`w-5 h-5 ${isBookmarked ? "fill-white stroke-white" : "stroke-white"}`}
-            />
+            {isBookmarked ? (
+              <SolidBookmarkIcon className="w-5 h-5 text-white" />
+            ) : (
+              <OutlineBookmarkIcon className="w-5 h-5" />
+            )}
           </button>
 
           {/* Share Icon */}

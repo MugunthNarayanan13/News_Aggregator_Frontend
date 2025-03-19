@@ -32,7 +32,9 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
 
   // Update local state when user prop changes
   useEffect(() => {
-    setLocations(user.locations);
+    // Filter out empty or invalid locations
+    const filteredLocations = user.locations.filter(loc => loc && loc.trim() !== "");
+    setLocations(filteredLocations);
     setSources(user.sources);
     setLanguages(user.languages);
   }, [user]);
@@ -65,8 +67,9 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
 
       if (type === "locations") {
         const trimmedValue = value.trim();
+        if (!trimmedValue) return; // Don't add empty values
+
         const isoLocation = convertCountryToISO(trimmedValue);
-      
         // Validate location
         if (!isoLocation || isoLocation === trimmedValue) {
           toast.warning("Invalid or unsupported location");
@@ -156,9 +159,8 @@ export default function PreferencesSection({ user, setUser }: PreferencesSection
         updatedList = languages.filter((_, i) => i !== index);
         setLanguages(updatedList);
         setUser({ ...user, languages: updatedList });
-        const isoLanguage = convertToISO(valueToRemove);
         await sendData(`/${userID}/languages/remove`, "PUT", {
-          language: isoLanguage
+          location: valueToRemove 
         });
       }
     } catch (error) {

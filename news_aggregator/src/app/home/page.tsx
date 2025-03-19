@@ -12,6 +12,7 @@ import NavBar from "@/components/navbar";
 import { NewsSection } from "@/components/NewsSection";
 import { fetchNews, fetchNewsOnlyBig } from "@/utils/fetchModule";
 import SpeechToText from "@/components/voice";
+import { articleService } from "@/utils/articleService";
 import {
   addCategoryWiseURL,
   addLanguageWiseURL,
@@ -158,6 +159,19 @@ export default function HomePage() {
       );
     }
   }, [timeframe]);
+
+  useEffect(() => {
+    // Initialize saved articles cache when the app/page loads
+    const initSavedArticles = async () => {
+      try {
+        await articleService.fetchSavedArticleLinks();
+      } catch (error) {
+        console.error('Error initializing saved articles:', error);
+      }
+    };
+    
+    initSavedArticles();
+  }, []);
 
   return (
     <Main>
