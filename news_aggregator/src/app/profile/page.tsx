@@ -36,6 +36,7 @@ interface UserData {
   BusinessArticlesRead: number;
   TechnologyArticlesRead: number;
   GlobalArticlesRead: number;
+  GlobalRanking: number;
   subscriptionPlan?: string;
   _id: string;
 }
@@ -59,6 +60,7 @@ export default function UserProfile() {
     TechnologyArticlesRead: 0,
     GlobalArticlesRead: 0,
     subscriptionPlan: "free",
+    GlobalRanking: 0,
     _id: "",
   });
   const [userID, setUserID] = useState<String>();
@@ -94,14 +96,14 @@ export default function UserProfile() {
           "GET"
         );
         data = response.data;
-      
+
         // Update localStorage with the latest user data
         localStorage.setItem("user", JSON.stringify(data));
-      
+
         console.log("Fetched user data from backend:", data);
       } catch (error) {
         console.error("Error fetching user data from backend:", error);
-      
+
         // If backend fails, fallback to localStorage
         const dataString = localStorage.getItem("user");
         if (dataString) {
@@ -109,7 +111,10 @@ export default function UserProfile() {
             data = JSON.parse(dataString) as UserData;
             console.log("Using fallback user data from localStorage:", data);
           } catch (parseError) {
-            console.error("Error parsing fallback localStorage data:", parseError);
+            console.error(
+              "Error parsing fallback localStorage data:",
+              parseError
+            );
           }
         }
       }
@@ -132,6 +137,7 @@ export default function UserProfile() {
           avatar: data.avatar ?? "", // Handle null avatars
           subscriptionPlan: data.subscriptionPlan || "free",
           _id: data._id || "",
+          GlobalRanking: data.GlobalRanking || 0,
         });
 
         setUserID(data._id || "");
@@ -253,7 +259,11 @@ export default function UserProfile() {
         )}
 
         {activeTab === "stats" && (
-          <ReadStats user={user} totalArticles={totalArticles} />
+          <ReadStats
+            user={user}
+            totalArticles={totalArticles}
+            globalRanking={user.GlobalRanking}
+          />
         )}
 
         {activeTab === "subscriptions" && (

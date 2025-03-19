@@ -12,11 +12,13 @@ interface ReadingStatsSectionProps {
     GlobalArticlesRead: number;
   };
   totalArticles: number;
+  globalRanking: number;
 }
 
 export default function ReadingStatsSection({
   user,
-  totalArticles
+  totalArticles,
+  globalRanking,
 }: ReadingStatsSectionProps) {
   // Calculate percentage for reading stats
   const calculatePercentage = (count: number) => {
@@ -192,12 +194,12 @@ export default function ReadingStatsSection({
           Reading Progress
         </h4>
         <div className="text-sm text-gray-600 mb-2">
-          You're in the top 25% of active readers this month!
+          You're in the top {globalRanking}% of active readers this month!
         </div>
         <div className="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
           <div
             className="h-full bg-green-500 rounded-full"
-            style={{ width: "75%" }}
+            style={{ width: `${globalRanking}%` }}
           ></div>
         </div>
         <div className="mt-4 text-center">
