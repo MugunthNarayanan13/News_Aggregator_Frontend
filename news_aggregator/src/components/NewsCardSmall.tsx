@@ -59,6 +59,7 @@ export default function NewsCardSmall({
   className = "",
   link,
   isBookmarked: initialBookmarked = false,
+  notInterestedHandler,
 }: NewsCardSmallProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
@@ -138,6 +139,16 @@ export default function NewsCardSmall({
             </button>
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md z-20 text-sm dark:text-black">
+                <button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    notInterestedHandler(link);
+                    setDropdownOpen(false);
+                  }}
+                >
+                  Not Interested
+                </button>
                 <button
                   className="w-full text-left px-4 py-2 hover:bg-gray-100"
                   onClick={(e) => {
