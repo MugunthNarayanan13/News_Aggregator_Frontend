@@ -65,51 +65,51 @@ export default function HomePage() {
     //     )
     addLanguageWiseURL(
       baseURL,
-      userPref != "" ? userPref.languages : ["en", "hi"]
+      userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
     )
   );
   const [worldNewsUrl, setWorldNewsUrl] = useState(() =>
-    userPref != "" && userPref.sources.length != 0
+    userPref != "" && userPref != null && userPref.sources.length != 0
       ? addPublisherWiseURL(
           addLanguageWiseURL(
             addCategoryWiseURL(baseURL, ["world"]),
-            userPref != "" ? userPref.languages : ["en", "hi"]
+            userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
           ),
           userPref.sources
         )
       : addLanguageWiseURL(
           addCategoryWiseURL(baseURL, ["world"]),
-          userPref != "" ? userPref.languages : ["en", "hi"]
+          userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
         )
   );
   const [politicsNewsUrl, setPoliticsNewsUrl] = useState(() =>
     addLanguageWiseURL(
       addCategoryWiseURL(baseURL, ["politics"]),
-      userPref != "" ? userPref.languages : ["en", "hi"]
+      userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
     )
   );
   const [technologyNewsUrl, setTechnologyNewsUrl] = useState(() =>
     addLanguageWiseURL(
       addCategoryWiseURL(baseURL, ["technology"]),
-      userPref != "" ? userPref.languages : ["en", "hi"]
+      userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
     )
   );
   const [businessNewsUrl, setBusinessNewsUrl] = useState(() =>
     addLanguageWiseURL(
       addCategoryWiseURL(baseURL, ["business"]),
-      userPref != "" ? userPref.languages : ["en", "hi"]
+      userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
     )
   );
   const [sportsNewsUrl, setSportsNewsUrl] = useState(() =>
     addLanguageWiseURL(
       addCategoryWiseURL(baseURL, ["sports"]),
-      userPref != "" ? userPref.languages : ["en", "hi"]
+      userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
     )
   );
   const [entertainmentNewsUrl, setEntertainmentNewsUrl] = useState(() =>
     addLanguageWiseURL(
       addCategoryWiseURL(baseURL, ["entertainment"]),
-      userPref != "" ? userPref.languages : ["en", "hi"]
+      userPref != "" && userPref != null ? userPref.languages : ["en", "hi"]
     )
   );
 
