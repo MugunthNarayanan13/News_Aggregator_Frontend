@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.4",
+    "@google/generative-ai": "^0.24.0",
     "@heroicons/react": "^2.2.0",
     "@heroui/button": "^2.2.10",
     "@heroui/navbar": "^2.2.9",
