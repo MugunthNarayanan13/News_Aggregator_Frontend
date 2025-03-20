@@ -65,7 +65,7 @@ const addRegionWiseURL = (url: string, regions: string[]) => {
   return url.slice(0,url.length);
 }
 
-const allPublishersURL = (countries: string[], langs=['en'], categories=[]) =>{
+const allPublishersURL = (countries: string[], langs=['en'], categories: string[] = []) =>{
   let url = sourceURL+`&country=`;
   countries.forEach((country)=>{
     url = url + country +",";

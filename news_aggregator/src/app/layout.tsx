@@ -27,7 +27,7 @@ export default function RootLayout({
         <body className={`${roboto.variable} antialiased`}>
           <ToastContainer
             position="bottom-center"
-            autoClose={3000}
+            autoClose={1000}
             hideProgressBar={true}
             newestOnTop={false}
             theme="light"

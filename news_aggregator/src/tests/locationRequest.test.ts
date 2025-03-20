@@ -1,136 +1,200 @@
-// Tried writing tests, but getting errors... have to fix it...
+import getLocationData from '../utils/locationRequest';
 
-import getLocationData from "../utils/locationRequest";
-
-// Mock the localStorage
-global.localStorage = {
-    setItem: jest.fn(),
-    getItem: jest.fn(),
-    clear: jest.fn(),
-    length: 0,
-    key: jest.fn(),
-    removeItem: jest.fn(),
-};
-
-// Mocking Geolocation
-const mockGeolocation = {
-    getCurrentPosition: jest.fn(),
-    watchPosition: jest.fn(),
-    clearWatch: jest.fn(),
-};
-
-jest.spyOn(global.navigator, 'geolocation', 'get').mockReturnValue(mockGeolocation);
-
-// Mocking the Fetch API
+// Mock fetch
 global.fetch = jest.fn();
 
-describe("getLocationData", () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+// Mock navigator.geolocation
+const mockGeolocation = {
+  getCurrentPosition: jest.fn(),
+};
+
+Object.defineProperty(global.navigator, 'geolocation', {
+  value: mockGeolocation,
+  configurable: true,
+});
+
+// Mock localStorage
+const localStorageMock = (function() {
+  let store: Record<string, string> = {};
+
+  return {
+    getItem: jest.fn((key: string) => store[key] || null),
+    setItem: jest.fn((key: string, value: string) => {
+      store[key] = value.toString();
+    }),
+    clear: jest.fn(() => {
+      store = {};
+    }),
+    removeItem: jest.fn((key: string) => {
+      delete store[key];
+    }),
+    key: jest.fn((index: number) => Object.keys(store)[index] || null),
+    length: 0,
+  };
+})();
+
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+  writable: true
+});
+
+// Mock console methods to avoid cluttering test output
+global.console = {
+  ...global.console,
+  log: jest.fn(),
+  error: jest.fn(),
+};
+
+describe('getLocationData', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    localStorageMock.clear();
+  });
+
+  it('should fetch and return location data successfully', async () => {
+    // Mock geolocation position
+    const mockPosition = {
+      coords: {
+        latitude: 40.7128,
+        longitude: -74.0060
+      }
+    };
+
+    // Mock successful response from API
+    const mockApiResponse = {
+      address: {
+        country: 'United States',
+        state: 'New York',
+        city: 'New York City',
+        country_code: 'us'
+      }
+    };
+
+    // Setup mocks
+    mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+      success(mockPosition);
     });
 
-    it("should successfully fetch and return location data", async () => {
-        const mockLocation = {
-            address: {
-                country: "Country",
-                state: "Region",
-                city: "City",
-                country_code: "US",
-            },
-        };
-
-        // Mocking the fetch response
-        (global.fetch as jest.Mock).mockResolvedValue({
-            json: jest.fn().mockResolvedValue(mockLocation),
-        });
-
-        // Mocking the geolocation API
-        mockGeolocation.getCurrentPosition.mockImplementationOnce((successCallback) =>
-            successCallback({
-                coords: {
-                    latitude: 10,
-                    longitude: 20,
-                },
-            })
-        );
-
-        // Call the function
-        const result = await getLocationData();
-
-        expect(result).toEqual({
-            country: "Country",
-            region: "Region",
-            city: "City",
-            country_code: "US",
-        });
-
-        // Check if the location is saved in localStorage
-        expect(localStorage.setItem).toHaveBeenCalledWith("userCountry", "Country");
-        expect(localStorage.setItem).toHaveBeenCalledWith("userRegion", "Region");
-        expect(localStorage.setItem).toHaveBeenCalledWith("userCity", "City");
-        expect(localStorage.setItem).toHaveBeenCalledWith("userCountryCode", "US");
+    (global.fetch as jest.Mock).mockResolvedValue({
+      json: () => Promise.resolve(mockApiResponse)
     });
 
-    it("should handle geolocation error", async () => {
-        const mockError = new Error("Geolocation error");
+    // Call the function
+    const result = await getLocationData();
 
-        // Mocking the geolocation error
-        mockGeolocation.getCurrentPosition.mockImplementationOnce((successCallback, errorCallback) =>
-            errorCallback(mockError)
-        );
+    // Verify fetch was called with correct URL
+    expect(global.fetch).toHaveBeenCalledWith(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=40.7128&lon=-74.006`
+      );
 
-        await expect(getLocationData()).rejects.toThrowError("Geolocation error");
-
-        // Verify that no localStorage is updated in case of error
-        expect(localStorage.setItem).not.toHaveBeenCalled();
+    // Check result
+    expect(result).toEqual({
+      country: 'United States',
+      region: 'New York',
+      city: 'New York City',
+      country_code: 'us'
     });
 
-    it("should handle fetch API error", async () => {
-        const mockGeolocationData = {
-            coords: { latitude: 10, longitude: 20 },
-        };
+    // Check localStorage
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('userCountry', 'United States');
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('userRegion', 'New York');
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('userCity', 'New York City');
+    expect(localStorageMock.setItem).toHaveBeenCalledWith('userCountryCode', 'us');
+  });
 
-        // Mocking the geolocation success
-        mockGeolocation.getCurrentPosition.mockImplementationOnce((successCallback) =>
-            successCallback(mockGeolocationData)
-        );
+  it('should return null when API response is missing required fields', async () => {
+    // Mock geolocation position
+    const mockPosition = {
+      coords: {
+        latitude: 40.7128,
+        longitude: -74.0060
+      }
+    };
 
-        // Mocking fetch to simulate an error response
-        (global.fetch as jest.Mock).mockRejectedValue(new Error("Fetch error"));
+    // Mock incomplete API response
+    const mockApiResponse = {
+      address: {
+        country: 'United States',
+        // Missing state, city, and country_code
+      }
+    };
 
-        await expect(getLocationData()).rejects.toThrowError("Fetch error");
-
-        // Verify that no localStorage is updated in case of fetch error
-        expect(localStorage.setItem).not.toHaveBeenCalled();
+    // Setup mocks
+    mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+      success(mockPosition);
     });
 
-    it("should return null if location data is incomplete", async () => {
-        const mockIncompleteLocation = {
-            address: {
-                country: "Country",
-                state: "Region",
-                // Missing city or country_code
-            },
-        };
-
-        // Mocking the fetch response
-        (global.fetch as jest.Mock).mockResolvedValue({
-            json: jest.fn().mockResolvedValue(mockIncompleteLocation),
-        });
-
-        // Mocking the geolocation API
-        mockGeolocation.getCurrentPosition.mockImplementationOnce((successCallback) =>
-            successCallback({
-                coords: {
-                    latitude: 10,
-                    longitude: 20,
-                },
-            })
-        );
-
-        // Call the function
-        const result = await getLocationData();
-
-        expect(result).toBeNull();
+    (global.fetch as jest.Mock).mockResolvedValue({
+      json: () => Promise.resolve(mockApiResponse)
     });
+
+    // Call the function
+    const result = await getLocationData();
+
+    // Check result
+    expect(result).toBeNull();
+    
+    // localStorage should not be called
+    expect(localStorageMock.setItem).not.toHaveBeenCalled();
+  });
+
+  it('should reject when fetch throws an error', async () => {
+    // Mock geolocation position
+    const mockPosition = {
+      coords: {
+        latitude: 40.7128,
+        longitude: -74.0060
+      }
+    };
+
+    // Setup mocks
+    mockGeolocation.getCurrentPosition.mockImplementation((success) => {
+      success(mockPosition);
+    });
+
+    const mockError = new Error('Network error');
+    (global.fetch as jest.Mock).mockRejectedValue(mockError);
+
+    // Call the function and expect rejection
+    await expect(getLocationData()).rejects.toThrow('Network error');
+    
+    // Check console.error was called
+    expect(console.error).toHaveBeenCalledWith('Error fetching location data:', mockError);
+  });
+
+  it('should reject when geolocation permission is denied', async () => {
+    // Mock geolocation error
+    const mockError = {
+      code: 1,
+      message: 'User denied geolocation'
+    };
+
+    // Setup mocks
+    mockGeolocation.getCurrentPosition.mockImplementation((success, error) => {
+      error(mockError);
+    });
+
+    // Call the function and expect rejection
+    await expect(getLocationData()).rejects.toEqual(mockError);
+    
+    // Check console.error was called
+    expect(console.error).toHaveBeenCalledWith('Geolocation error:', mockError);
+  });
+
+  it('should reject when geolocation is not available', async () => {
+    // Mock geolocation unavailable
+    Object.defineProperty(global.navigator, 'geolocation', {
+      value: undefined,
+      configurable: true,
+    });
+
+    // Call the function and expect rejection
+    await expect(getLocationData()).rejects.toThrow('Geolocation is not available in this browser');
+
+    // Restore geolocation for other tests
+    Object.defineProperty(global.navigator, 'geolocation', {
+      value: mockGeolocation,
+      configurable: true,
+    });
+  });
 });
