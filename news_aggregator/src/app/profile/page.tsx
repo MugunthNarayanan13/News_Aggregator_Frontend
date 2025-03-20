@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-wrapper-object-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
@@ -8,13 +9,7 @@ import PreferencesSection from "@/components/PreferencesSection";
 import ReadStats from "@/components/ReadStats";
 import SecuritySection from "@/components/SecuritySection";
 import DangerZone from "@/components/DangerZone";
-import {
-  BarChartIcon,
-  SettingsIcon,
-  UserCircleIcon,
-  BellIcon,
-  CreditCardIcon,
-} from "lucide-react";
+import { BarChartIcon, SettingsIcon, UserCircleIcon, BellIcon, CreditCardIcon, BookmarkIcon } from "lucide-react";
 import ProfileSection from "@/components/ProfileSection";
 import { isValidLanguage } from "@/utils/isoConverterLang";
 import { convertCountryToISO } from "@/utils/isoConverterLoc";
@@ -212,7 +207,16 @@ export default function UserProfile() {
         >
           <BarChartIcon size={18} /> Reading Stats
         </button>
-
+        <button
+          onClick={() => setActiveTab("saved-articles")}
+          className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-300 ${
+            activeTab === "saved-articles"
+              ? "text-primary border-b-2 border-primary"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+        >
+          <BookmarkIcon size={18} /> Saved Articles
+        </button>
         <button
           onClick={() => setActiveTab("subscriptions")}
           className={`flex items-center gap-2 px-4 py-2 font-medium transition-colors duration-300 ${
@@ -264,6 +268,9 @@ export default function UserProfile() {
             totalArticles={totalArticles}
             globalRanking={user.GlobalRanking}
           />
+        )}
+        {activeTab === "saved-articles" && (
+          <SavedArticles />
         )}
 
         {activeTab === "subscriptions" && (

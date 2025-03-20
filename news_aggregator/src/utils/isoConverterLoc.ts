@@ -81,6 +81,11 @@ const isValidCountry = (input: string): boolean => {
  * @returns The ISO code, or "Invalid location" if not found
  */
 export const convertCountryToISO = (countryName: string): string => {
+
+  if (!countryName) {
+    return "Invalid location";
+  }
+
   const normalizedName = countryName.trim().toLowerCase();
 
   // Reject input if it contains non-country related words

@@ -1,19 +1,26 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// NewsCardBig.tsx with bookmark state visual feedback
 import { timeAgo } from "@/utils/dateFormatter";
-import { ShareIcon, BookmarkIcon } from "@heroicons/react/24/outline";
+import { ShareIcon, BookmarkIcon as OutlineBookmarkIcon } from "@heroicons/react/24/outline";
+import { BookmarkIcon as SolidBookmarkIcon } from "@heroicons/react/24/solid";
 import { useState, useRef, useEffect } from "react";
+import { articleService } from "@/utils/articleService";
+import { toast } from "react-toastify";
 
 export interface NewsCardBigProps {
   title: string;
-  desc: string;
-  pubDate: string;
-  pubDateTZ: string;
-  pubName: string;
-  pubLogo: string;
-  imgUrl: string;
-  sentiment: string;
+  desc?: string;
+  pubDate?: string;
+  pubDateTZ?: string;
+  pubName?: string;
+  pubLogo?: string;
+  imgUrl?: string;
+  sentiment?: string;
   link: string;
+  id?: string;
+  timestamp?: string;
+  isBookmarked?: boolean;
 }
 
 const truncateText = (text: string, maxLength: number) => {
@@ -33,29 +40,43 @@ const shareNews = async (url: string) => {
     }
   } else {
     await navigator.clipboard.writeText(url);
-    alert("News link copied to clipboard! 📋");
+    toast.success("News link copied to clipboard!");
   }
 };
 
 const handleNewsClick = (link: string) => {
   if (link) {
-    window.location.href = link;
+    window.open(link, "_blank");
   }
 };
 
 export default function NewsCardBig({
   title,
-  desc,
-  pubDate,
-  pubDateTZ,
-  pubName,
-  pubLogo,
-  sentiment,
-  imgUrl,
+  desc = "",
+  pubDate = "",
+  pubDateTZ = "",
+  pubName = "",
+  pubLogo = "",
+  sentiment = "",
+  imgUrl = "",
   link,
+  id,
+  isBookmarked: initialBookmarked = false,
 }: NewsCardBigProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Initialize bookmark state from localStorage/service
+  useEffect(() => {
+    const checkBookmarkStatus = () => {
+      const isBookmarked = articleService.isArticleBookmarked(link);
+      setIsBookmarked(isBookmarked);
+    };
+    
+    checkBookmarkStatus();
+  }, [link]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -77,13 +98,27 @@ export default function NewsCardBig({
 
   const handleDropdownAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent redirection
-    alert(`${action} clicked`);
+    toast.info(`${action} feature coming soon`);
     setDropdownOpen(false);
   };
 
-  const handleBookmark = (e: React.MouseEvent) => {
+  const handleBookmark = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    alert("Saved for later! 🔖");
+    
+    try {
+      setIsSaving(true);
+      await articleService.saveArticle({
+        title, link,
+        url: undefined
+      });
+      setIsBookmarked(true);
+      toast.success("Article saved successfully");
+    } catch (error) {
+      console.error("Error saving article:", error);
+      toast.error("Failed to save article");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -142,7 +177,7 @@ export default function NewsCardBig({
 
         {/* Time Ago */}
         <div className="px-3 py-1 mt-1 mb-1 font-light text-xs md:text-sm dark:text-black">
-          <p>{timeAgo(pubDate, pubDateTZ)}</p>
+          <p>{pubDate ? timeAgo(pubDate, pubDateTZ) : ""}</p>
         </div>
 
         {/* Footer Bar */}
@@ -161,8 +196,13 @@ export default function NewsCardBig({
             onClick={handleBookmark}
             className="px-2 text-white hover:opacity-80 transition"
             title="Save for Later"
+            disabled={isSaving}
           >
-            <BookmarkIcon className="w-5 h-5" />
+            {isBookmarked ? (
+              <SolidBookmarkIcon className="w-5 h-5 text-white" />
+            ) : (
+              <OutlineBookmarkIcon className="w-5 h-5" />
+            )}
           </button>
 
           {/* Share Button */}
