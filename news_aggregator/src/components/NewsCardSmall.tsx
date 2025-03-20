@@ -6,6 +6,7 @@ import { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import { ShareIcon, BookmarkIcon as OutlineBookmarkIcon } from "@heroicons/react/24/outline";
 import { BookmarkIcon as SolidBookmarkIcon } from "@heroicons/react/24/solid";
+import { createChatSession } from "./ChatSummarizer";
 
 export interface NewsCardSmallProps {
   title: string;
@@ -19,6 +20,7 @@ export interface NewsCardSmallProps {
   link: string;
   isBookmarked?: boolean;
   notInterestedHandler: (linkUrl: string) => void;
+  onSummarize: (text: string) => void;
 }
 
 const truncateText = (text: string, maxLength: number) => {
