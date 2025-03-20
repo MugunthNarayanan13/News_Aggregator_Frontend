@@ -39,6 +39,13 @@ export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
   const [newsState, setNewsState] = useState<NewsState>(INITIAL_NEWS_STATE);
   const [pageIndex, setPageIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(6);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [summaryResult, setSummaryResult] = useState("");
+
+  const handleSummary = (summary_text: string) => {
+    setSummaryResult(summary_text);
+    setModalOpen(true);
+  }
 
   const notIntrestedHandler = (link: string) => {
     setNewsState((prevState) => ({
@@ -211,11 +218,27 @@ export function NewsSection({ sectionTitle, categoryUrl }: NewsSectionProps) {
                     <NewsCardSmall
                       {...news}
                       notInterestedHandler={notIntrestedHandler}
+                      onSummarize={handleSummary}
                     />
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+      {/* Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 flex justify-center items-center">
+          <div className="bg-white p-4 rounded-md w-1/2">
+            <h2 className="text-lg font-semibold mb-2">Summary</h2>
+            <p>{summaryResult}</p>
+            <button
+              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-md"
+              onClick={() => setModalOpen(false)}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
