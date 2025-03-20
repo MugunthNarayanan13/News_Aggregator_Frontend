@@ -62,12 +62,23 @@ export default function NewsCardSmall({
   link,
   isBookmarked: initialBookmarked = false,
   notInterestedHandler,
+  onSummarize,
 }: NewsCardSmallProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  async function Summarize(link: string) {
+    const chatSession = await createChatSession();
+    const result = await chatSession.sendMessage(link);
+    if (result && result.response && result.response.text()) {
+        onSummarize(result.response.text());
+    } else {
+        console.error("Summary text not found in GenerateContentResult");
+        onSummarize("Summary not available");
+    }
+}
 
   // Initialize bookmark state from localStorage/service
     useEffect(() => {
@@ -151,6 +162,16 @@ export default function NewsCardSmall({
                 >
                   Not Interested
                 </button>
+                <button
+                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      Summarize(link);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    Summarise
+                  </button>
                 <button
                   className="w-full text-left px-4 py-2 hover:bg-gray-100"
                   onClick={(e) => {
