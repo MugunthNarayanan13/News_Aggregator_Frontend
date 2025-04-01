@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
 const ThemeContext = createContext({ theme: 'light', setTheme: (theme: string) => {} });

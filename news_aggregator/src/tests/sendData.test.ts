@@ -13,7 +13,7 @@ jest.mock('react-toastify', () => ({
 }));
 
 describe('sendData', () => {
-  const BASE_BACKEND_URL = 'http://localhost:5000/api/users';
+  const BASE_BACKEND_URL = 'http://localhost:5000/NewsAgg/users';
   
   beforeEach(() => {
     jest.clearAllMocks();

@@ -64,7 +64,7 @@ describe('articleService', () => {
       
       const result = await articleService.getSavedArticles();
       
-      expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:5000/api/articles');
+      expect(mockedAxios.get).toHaveBeenCalledWith('http://localhost:5000/NewsAgg/articles');
       expect(result).toEqual(mockArticles);
     });
 

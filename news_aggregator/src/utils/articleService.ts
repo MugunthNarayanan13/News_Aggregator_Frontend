@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 // Define a separate API client for articles that doesn't use sendData
-const BASE_URL = "http://localhost:5000/api/articles";
+const BASE_URL = "http://localhost:5000/NewsAgg/articles";
 
 export const articleService = {
   // Fetch all saved articles for a user
