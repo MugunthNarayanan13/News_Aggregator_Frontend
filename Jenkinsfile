@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-repo.git' // Replace with your repo URL
+                git 'https://github.com/MugunthNarayanan13/News_Aggregator_Frontend.git'
             }
         }
         stage('Install Dependencies') {
